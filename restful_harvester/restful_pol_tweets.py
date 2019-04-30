@@ -7,10 +7,7 @@
 
 from tweepy import OAuthHandler, AppAuthHandler, API, TweepError
 import pandas as pd
-import numpy as np
-from functools import reduce
-from pymongo import MongoClient, UpdateOne
-from tweet_analyser import TweetAnalyser
+from analyser.tweet_analyser import TweetAnalyser
 from multiprocessing import Process
 import threading
 import datetime
@@ -104,7 +101,7 @@ class RestfulPolTweets(threading.Thread):
 
 
 if __name__ == "__main__":
-    temp_df = pd.read_csv('Politicians.csv', usecols=['ScreenName'])
+    temp_df = pd.read_csv('../data/new_politician_list.csv', usecols=['ScreenName'])
     politician_list = temp_df['ScreenName'].dropna().tolist()
     for screen_name in politician_list[:1]:
         print('============================================')

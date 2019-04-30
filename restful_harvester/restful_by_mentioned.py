@@ -7,14 +7,9 @@
 
 from tweepy import OAuthHandler, AppAuthHandler, API, TweepError
 import pandas as pd
-import numpy as np
-from functools import reduce
-from pymongo import MongoClient, UpdateOne
-from tweet_analyser import TweetAnalyser
+from analyser.tweet_analyser import TweetAnalyser
 from multiprocessing import Process
 import threading
-import datetime
-import time
 import gc
 
 gc.enable()
@@ -77,7 +72,6 @@ class RestfulByMentioned(threading.Thread):
         while True:
             try:
                 raw_tweets = self.twitter_api.search(q='@' + self.SCREEN_NAME, tweet_mode='extended',
-                                                     # geocode="-33.854,151.216,180.00km",
                                                      result_type='mixed', count=TWEETS_PER_QUERY, max_id=max_id)
                 if not raw_tweets:
                     print("No more mentioned tweets found.")
@@ -103,13 +97,13 @@ class RestfulByMentioned(threading.Thread):
 
 
 if __name__ == "__main__":
-    temp_df = pd.read_csv('new_politician_list.csv', usecols=['ScreenName'])
+    temp_df = pd.read_csv('../data/new_politician_list.csv', usecols=['ScreenName'])
     politician_list = temp_df['ScreenName'].dropna().tolist()
-    for screen_name in politician_list:
+    for screen_name in politician_list[:1]:
         print('============================================')
         print('Process: {}/{}'.format(politician_list.index(screen_name) + 1, len(politician_list)))
-        restful_mentioned = RestfulByMentioned(screen_name, 'capstone', 'restfulMentioned')
-        # restful_mentioned = RestfulByMentioned(screen_name, 'test', 'test')
+        # restful_mentioned = RestfulByMentioned(screen_name, 'capstone', 'restfulMentioned')
+        restful_mentioned = RestfulByMentioned(screen_name, 'test', 'test')
         print("Crawling tweets mentioned {}.".format(screen_name))
         restful_mentioned.start()
         restful_mentioned.join()

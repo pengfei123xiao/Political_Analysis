@@ -88,6 +88,29 @@ class TweetAnalyser():
         df['Source'] = np.array([tweet.source for tweet in raw_tweets])
         return df
 
+    def politician_info_to_dataframe(self, user_info):
+        """
+        Convert politicians' raw data into structured data.
+        :param user_info: User Status
+            User raw data from twitter API.
+
+        :return: dataframe
+            Structured dataframe.
+        """
+        df = pd.DataFrame()
+        df['ID'] = [user_info.id_str]
+        df['Name'] = [user_info.name]
+        df['Screen_Name'] = [user_info.screen_name]
+        df['Avatar'] = [user_info.profile_image_url.replace('_normal' or '_bigger', '')]
+        df['Friends_Count'] = [user_info.friends_count]
+        df['Followers_Count'] = [user_info.followers_count]
+        df['Listed_Count'] = [user_info.listed_count]
+        df['Total_Tweets'] = [user_info.statuses_count]
+        df['Create_Time'] = [user_info.created_at]
+        df['Location'] = [user_info.location]
+        df['Description'] = [user_info.description]
+        return df
+
     def save_data(self, tweets_list, db_name, collection_name):
         """
         The function is used to update/insert data into MongoDB.

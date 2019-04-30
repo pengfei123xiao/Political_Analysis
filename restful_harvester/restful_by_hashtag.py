@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 from functools import reduce
 from pymongo import MongoClient, UpdateOne
-from tweet_analyser import TweetAnalyser
+from analyser.tweet_analyser import TweetAnalyser
 from ast import literal_eval  # Convert list-like string to list
 from multiprocessing import Process
 import threading
@@ -103,7 +103,7 @@ class RestfulHashtags(threading.Thread):
 
 if __name__ == '__main__':
     start_time = time.time()
-    top_tag_df = pd.read_csv('top_tags.csv')
+    top_tag_df = pd.read_csv('../data/top_tags.csv')
     hashtag_list = []
     for i, v in top_tag_df['Top_Tags'].iteritems():
         for item in literal_eval(v):
@@ -114,8 +114,8 @@ if __name__ == '__main__':
     for hashtag in hashtag_set:  # ['puthatelast']:
         print('============================================')
         print('Process: {}/{}'.format(count, len(hashtag_set)))
-        restful_hashtag = RestfulHashtags(hashtag, 'capstone', 'restfulByHashtag')
-        # restful_hashtag = RestfulHashtags(hashtag, 'test', 'test')
+        # restful_hashtag = RestfulHashtags(hashtag, 'capstone', 'restfulByHashtag')
+        restful_hashtag = RestfulHashtags(hashtag, 'test', 'test')
         print("Crawling tweets by {}.".format(hashtag))
         restful_hashtag.start()
         restful_hashtag.join()

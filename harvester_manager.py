@@ -7,10 +7,10 @@
 
 import pandas as pd
 import time
-from restful_replies import RestfulReplies
-from restful_pol_tweets import RestfulPolTweets
-from restful_by_hashtag import RestfulHashtags
-from restful_by_mentioned import RestfulByMentioned
+from restful_harvester.restful_replies import RestfulReplies
+from restful_harvester.restful_pol_tweets import RestfulPolTweets
+from restful_harvester.restful_by_hashtag import RestfulHashtags
+from restful_harvester.restful_by_mentioned import RestfulByMentioned
 import gc
 
 gc.enable()
@@ -18,7 +18,7 @@ gc.enable()
 if __name__ == '__main__':
     start_time = time.time()
 
-    temp_df = pd.read_csv('new_politician_list.csv', usecols=['ScreenName'])
+    temp_df = pd.read_csv('../data/new_politician_list.csv', usecols=['ScreenName'])
     politician_list = temp_df['ScreenName'].dropna().tolist()
 
     print("Start restful crawling.")

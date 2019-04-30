@@ -38,9 +38,9 @@ class TwitterAuthenticator():
 
         :return:
         """
-        auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-        auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-        # auth = AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        # auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        # auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+        auth = AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         return auth
 
 
@@ -71,7 +71,6 @@ class RestfulReplies(threading.Thread):
         while True:
             try:
                 raw_tweets = self.twitter_api.search(q='to:' + self.SCREEN_NAME, result_type='mixed',
-                                                     # geocode="-33.854,151.216,180.00km",
                                                      tweet_mode='extended', max_id=max_id, count=NUM_PER_QUERY)
                 if len(raw_tweets) == 0:
                     print("No more replies found.")

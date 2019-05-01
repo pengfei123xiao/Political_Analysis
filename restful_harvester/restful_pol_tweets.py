@@ -83,7 +83,7 @@ class RestfulPolTweets(threading.Thread):
 
                 if df.shape[0] != 0:
                     records_count += df.shape[0]
-                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name)
+                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'restful')
                 # if raw_tweets[-1].created_at < start_date:
                 #     print('Date boundary reached.')
                 #     print('In total {} tweets are stored in DB.'.format(records_count))

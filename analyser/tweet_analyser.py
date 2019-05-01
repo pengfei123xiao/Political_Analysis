@@ -111,7 +111,7 @@ class TweetAnalyser():
         df['Description'] = [user_info.description]
         return df
 
-    def save_data(self, tweets_list, db_name, collection_name):
+    def save_data(self, tweets_list, db_name, collection_name, tweet_type):
         """
         The function is used to update/insert data into MongoDB.
         :param tweets_list: list
@@ -120,6 +120,8 @@ class TweetAnalyser():
             Specify the DB we want to store in.
         :param collection_name: str
             Specify the collection we want to store in.
+        :param tweet_type: str
+            Specify the type of tweets.
 
         :return: null
         """
@@ -127,11 +129,13 @@ class TweetAnalyser():
         client = MongoClient("mongodb://admin:123@115.146.85.107/")
         db = client[db_name]
         collection = db[collection_name]
-        # collection.insert_many(df.to_dict('records'))
-        operations = []
-        for item in tweets_list:
-            operations.append(UpdateOne({'ID': item['ID']}, {'$set': item}, upsert=True))
-        collection.bulk_write(operations, ordered=False)
+        if tweet_type == 'streaming':
+            collection.insert_many(tweets_list)
+        elif tweet_type == 'restful':
+            operations = []
+            for item in tweets_list:
+                operations.append(UpdateOne({'ID': item['ID']}, {'$set': item}, upsert=True))
+            collection.bulk_write(operations, ordered=False)
 
     def find_data(self, db_name, collection_name):
         """

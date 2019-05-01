@@ -88,7 +88,7 @@ class RestfulHashtags(threading.Thread):
                 df = TweetAnalyser().tweets_to_dataframe(raw_tweets)
 
                 if df.shape[0] != 0:
-                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name)
+                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'restful')
                     records_count += df.shape[0]
 
             except TweepError as e:
@@ -111,7 +111,7 @@ if __name__ == '__main__':
     hashtag_set = set(hashtag_list)
 
     count = 1
-    for hashtag in hashtag_set:  # ['puthatelast']:
+    for hashtag in ['puthatelast']:  # hashtag_set:
         print('============================================')
         print('Process: {}/{}'.format(count, len(hashtag_set)))
         # restful_hashtag = RestfulHashtags(hashtag, 'capstone', 'restfulByHashtag')

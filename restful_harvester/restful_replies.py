@@ -82,7 +82,7 @@ class RestfulReplies(threading.Thread):
                 df = TweetAnalyser().tweets_to_dataframe(raw_tweets)
 
                 if df.shape[0] != 0:
-                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name)
+                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'restful')
                     records_count += df.shape[0]
 
             except TweepError as e1:

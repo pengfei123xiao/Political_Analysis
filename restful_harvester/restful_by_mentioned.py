@@ -84,7 +84,7 @@ class RestfulByMentioned(threading.Thread):
 
                 if df.shape[0] != 0:
                     records_count += df.shape[0]
-                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name)
+                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'restful')
 
             except TweepError as e1:
                 print('Restful by mentioned error:')

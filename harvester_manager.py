@@ -18,7 +18,7 @@ gc.enable()
 if __name__ == '__main__':
     start_time = time.time()
 
-    temp_df = pd.read_csv('../data/new_politician_list.csv', usecols=['ScreenName'])
+    temp_df = pd.read_csv('data/new_politician_list.csv', usecols=['ScreenName'])
     politician_list = temp_df['ScreenName'].dropna().tolist()
 
     print("Start restful crawling.")
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     #     print("Crawling tweets by {}.".format(hashtag))
     #     restful_hashtag.start()
     #     restful_hashtag.join()
-    for screen_name in politician_list:
+    for screen_name in politician_list:  # ['HelenHaines1', 'RobertHolian']:
         print('============================================')
         print('Process: {}/{}'.format(politician_list.index(screen_name) + 1, len(politician_list)))
         restful_mentioned = RestfulByMentioned(screen_name, 'capstone', 'restfulMentioned')

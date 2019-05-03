@@ -7,6 +7,8 @@
 
 from tweepy import OAuthHandler, AppAuthHandler, TweepError, API
 import pandas as pd
+import sys
+sys.path.append('..')
 from analyser.tweet_analyser import TweetAnalyser
 from multiprocessing import Process
 import threading
@@ -38,9 +40,9 @@ class TwitterAuthenticator():
 
         :return:
         """
-        # auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-        # auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-        auth = AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+        # auth = AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         return auth
 
 
@@ -70,7 +72,7 @@ class RestfulReplies(threading.Thread):
 
         while True:
             try:
-                raw_tweets = self.twitter_api.search(q='to:' + self.SCREEN_NAME, result_type='mixed',
+                raw_tweets = self.twitter_api.search(q='to:' + self.SCREEN_NAME,  # geocode="-33.854,151.216,180.00km",
                                                      tweet_mode='extended', max_id=max_id, count=NUM_PER_QUERY)
                 if len(raw_tweets) == 0:
                     print("No more replies found.")
@@ -82,7 +84,7 @@ class RestfulReplies(threading.Thread):
                 df = TweetAnalyser().tweets_to_dataframe(raw_tweets)
 
                 if df.shape[0] != 0:
-                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'restful')
+                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
                     records_count += df.shape[0]
 
             except TweepError as e1:
@@ -102,7 +104,7 @@ if __name__ == "__main__":
         print('============================================')
         print('Process: {}/{}'.format(politician_list.index(screen_name) + 1, len(politician_list)))
         # restful_replies = RestfulReplies(screen_name, 'capstone', 'restfulMentioned')
-        restful_replies = RestfulReplies(screen_name, 'test', 'test')
+        restful_replies = RestfulReplies(screen_name, 'test', 'test1')
         print("Crawling replies to  {}.".format(screen_name))
         restful_replies.start()
         restful_replies.join()

@@ -7,6 +7,8 @@
 
 from tweepy import OAuthHandler, AppAuthHandler, API, TweepError
 import pandas as pd
+import sys
+sys.path.append('..')
 from analyser.tweet_analyser import TweetAnalyser
 from multiprocessing import Process
 import threading
@@ -67,12 +69,11 @@ class RestfulByMentioned(threading.Thread):
         max_id = None
         TWEETS_PER_QUERY = 100
         records_count = 0
-        # start_date = datetime.datetime(2019, 1, 1, 0, 0, 0)
 
         while True:
             try:
-                raw_tweets = self.twitter_api.search(q='@' + self.SCREEN_NAME, tweet_mode='extended',
-                                                     result_type='mixed', count=TWEETS_PER_QUERY, max_id=max_id)
+                raw_tweets = self.twitter_api.search(q='@' + self.SCREEN_NAME,  # geocode="-33.854,151.216,180.00km",
+                                                     tweet_mode='extended', count=TWEETS_PER_QUERY, max_id=max_id)
                 if not raw_tweets:
                     print("No more mentioned tweets found.")
                     print('In total {} tweets are stored in DB.'.format(records_count))
@@ -84,7 +85,7 @@ class RestfulByMentioned(threading.Thread):
 
                 if df.shape[0] != 0:
                     records_count += df.shape[0]
-                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'restful')
+                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
 
             except TweepError as e1:
                 print('Restful by mentioned error:')
@@ -102,8 +103,8 @@ if __name__ == "__main__":
     for screen_name in politician_list[:1]:
         print('============================================')
         print('Process: {}/{}'.format(politician_list.index(screen_name) + 1, len(politician_list)))
-        # restful_mentioned = RestfulByMentioned(screen_name, 'capstone', 'restfulMentioned')
-        restful_mentioned = RestfulByMentioned(screen_name, 'test', 'test')
+        restful_mentioned = RestfulByMentioned(screen_name, 'capstone', 'restfulMentioned')
+        # restful_mentioned = RestfulByMentioned(screen_name, 'test', 'test1')
         print("Crawling tweets mentioned {}.".format(screen_name))
         restful_mentioned.start()
         restful_mentioned.join()

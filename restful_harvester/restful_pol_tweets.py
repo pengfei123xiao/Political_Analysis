@@ -83,7 +83,7 @@ class RestfulPolTweets(threading.Thread):
 
                 if df.shape[0] != 0:
                     records_count += df.shape[0]
-                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'restful')
+                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
                 # if raw_tweets[-1].created_at < start_date:
                 #     print('Date boundary reached.')
                 #     print('In total {} tweets are stored in DB.'.format(records_count))
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     for screen_name in politician_list[:1]:
         print('============================================')
         print('Process: {}/{}'.format(politician_list.index(screen_name) + 1, len(politician_list)))
-        restful_crawler = RestfulPolTweets(screen_name, 'test', 'test')
+        restful_crawler = RestfulPolTweets(screen_name, 'test', 'test1')
         print("Crawling replies to  {}.".format(screen_name))
         restful_crawler.start()
         restful_crawler.join()

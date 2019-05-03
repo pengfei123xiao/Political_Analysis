@@ -88,11 +88,18 @@ class TweetAnalyser():
         df['Source'] = np.array([tweet.source for tweet in raw_tweets])
         return df
 
-    def politician_info_to_dataframe(self, user_info):
+    def politician_info_to_dataframe(self, user_info, state_name, electorate_name, party_name):
         """
         Convert politicians' raw data into structured data.
         :param user_info: User Status
             User raw data from twitter API.
+        :param state_name: str
+            State name of a politician.
+        :param electorate_name: str
+            Electoral District name of a politician.
+        :param party_name: str
+            Party name of a politician.
+
 
         :return: dataframe
             Structured dataframe.
@@ -102,16 +109,19 @@ class TweetAnalyser():
         df['Name'] = [user_info.name]
         df['Screen_Name'] = [user_info.screen_name]
         df['Avatar'] = [user_info.profile_image_url.replace('_normal' or '_bigger', '')]
+        df['Electoral_District'] = [electorate_name]
+        df['Party'] = [party_name]
         df['Friends_Count'] = [user_info.friends_count]
         df['Followers_Count'] = [user_info.followers_count]
         df['Listed_Count'] = [user_info.listed_count]
         df['Total_Tweets'] = [user_info.statuses_count]
         df['Create_Time'] = [user_info.created_at]
         df['Location'] = [user_info.location]
+        df['State'] = [state_name]
         df['Description'] = [user_info.description]
         return df
 
-    def save_data(self, tweets_list, db_name, collection_name, tweet_type):
+    def save_data(self, tweets_list, db_name, collection_name, operation_type):
         """
         The function is used to update/insert data into MongoDB.
         :param tweets_list: list
@@ -120,8 +130,8 @@ class TweetAnalyser():
             Specify the DB we want to store in.
         :param collection_name: str
             Specify the collection we want to store in.
-        :param tweet_type: str
-            Specify the type of tweets.
+        :param operation_type: str
+            Specify the type of operation.
 
         :return: null
         """
@@ -129,9 +139,9 @@ class TweetAnalyser():
         client = MongoClient("mongodb://admin:123@115.146.85.107/")
         db = client[db_name]
         collection = db[collection_name]
-        if tweet_type == 'streaming':
+        if operation_type == 'insert':
             collection.insert_many(tweets_list)
-        elif tweet_type == 'restful':
+        elif operation_type == 'update':
             operations = []
             for item in tweets_list:
                 operations.append(UpdateOne({'ID': item['ID']}, {'$set': item}, upsert=True))

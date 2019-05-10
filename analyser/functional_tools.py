@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 30/03/2019 7:13 PM
 # @Author  : Pengfei Xiao
-# @FileName: tweet_analyser.py
+# @FileName: functional_tools.py
 # @Software: PyCharm
 
 import pandas as pd
@@ -17,7 +17,7 @@ import gc
 gc.enable()
 
 
-class TweetAnalyser():
+class FunctionalTools():
     """
     Functionality for analyzing and categorizing content from tweets.
     """

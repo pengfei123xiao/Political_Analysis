@@ -9,7 +9,7 @@ from tweepy import OAuthHandler, AppAuthHandler, TweepError, API
 import pandas as pd
 import sys
 sys.path.append('..')
-from analyser import tweet_analyser
+from analyser import functional_tools
 from ast import literal_eval  # Convert list-like string to list
 from multiprocessing import Process
 import threading
@@ -78,7 +78,7 @@ class RestfulHashtags(threading.Thread):
         max_id = None
         NUM_PER_QUERY = 100
         records_count = 0
-        analyser = tweet_analyser.TweetAnalyser()
+        f_tools = functional_tools.FunctionalTools()
 
         while True:
             try:
@@ -91,10 +91,10 @@ class RestfulHashtags(threading.Thread):
                     break
 
                 max_id = raw_tweets[-1].id - 1  # update max_id to harvester earlier data
-                df = analyser.tweets_to_dataframe(raw_tweets)
+                df = f_tools.tweets_to_dataframe(raw_tweets)
 
                 if df.shape[0] != 0:
-                    analyser.save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
+                    f_tools.save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
                     records_count += df.shape[0]
 
             except TweepError as e:
@@ -122,11 +122,11 @@ if __name__ == '__main__':
                  'watergate', 'wentworthvotes', 'widebayvotes', 'anzacday', 'anzac', 'anzacday2019']
 
     count = 1
-    for hashtag in hashlist1:  # hashtag_set:  # ['puthatelast']:
+    for hashtag in hashlist1[:1]:  # hashtag_set:  # ['puthatelast']:
         print('============================================')
         print('Process: {}/{}'.format(count, len(hashtag_set)))
-        restful_hashtag = RestfulHashtags(hashtag, 'capstone', 'restfulByHashtag')
-        # restful_hashtag = RestfulHashtags(hashtag, 'test', 'test1')
+        # restful_hashtag = RestfulHashtags(hashtag, 'capstone', 'restfulByHashtag')
+        restful_hashtag = RestfulHashtags(hashtag, 'test', 'test99')
         print("Crawling tweets by {}.".format(hashtag))
         restful_hashtag.start()
         restful_hashtag.join()

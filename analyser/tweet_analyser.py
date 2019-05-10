@@ -35,7 +35,6 @@ class TweetAnalyser():
 
     def analyze_sentiment(self, tweet):
         analysis = TextBlob(self.clean_tweet(tweet))
-
         if analysis.sentiment.polarity > 0:
             return 1
         elif analysis.sentiment.polarity == 0:
@@ -86,6 +85,60 @@ class TweetAnalyser():
         df['Location'] = np.array([tweet.user.location for tweet in raw_tweets])
         df['Coordinates'] = np.array([tweet.coordinates for tweet in raw_tweets])
         df['Source'] = np.array([tweet.source for tweet in raw_tweets])
+        return df
+
+    def pol_tweets_to_dataframe(self, raw_tweets, state_name, electorate_name, party_name):
+        """
+        Convert raw data into structured data.
+        :param raw_tweets: Status
+            Status data from twitter API.
+        :param state_name: str
+            State name of a politician.
+        :param electorate_name: str
+            Electoral District name of a politician.
+        :param party_name: str
+            Party name of a politician.
+
+        :return: dataframe
+            Structured dataframe.
+        """
+        df = pd.DataFrame()
+        contents = []
+        tags = []
+        mentioned = []
+        df['ID'] = np.array([tweet.id_str for tweet in raw_tweets])
+        df['Screen_Name'] = np.array([tweet.user.screen_name for tweet in raw_tweets])
+        df['Date'] = np.array([tweet.created_at for tweet in raw_tweets])
+        for tweet in raw_tweets:
+            tags_single = []
+            mentioned_single = [user['screen_name'] for user in tweet.entities['user_mentions']]
+            mentioned.append(mentioned_single)
+            if 'retweeted_status' in tweet._json:
+                contents.append(
+                    'RT @' + tweet._json['retweeted_status']['user']['screen_name'] + ': ' +
+                    tweet._json['retweeted_status']['full_text'])
+                tags_single = [item['text'] for item in tweet._json['retweeted_status']['entities']['hashtags']]
+            else:
+                contents.append(tweet.full_text)
+            tags_single.extend([item['text'] for item in tweet.entities['hashtags']])
+            tags_single = list(set(tags_single))
+            tags.append(tags_single)
+        df['Tweets'] = contents
+        df['Hashtags'] = tags  # name modified
+        df['Mentioned_Screen_Name'] = mentioned
+        df['Content_Sentiment'] = np.array([self.analyze_sentiment(tweet.full_text) for tweet in raw_tweets])
+        df['Length'] = np.array([len(tweet.full_text) for tweet in raw_tweets])
+        df['Language'] = np.array([tweet.lang for tweet in raw_tweets])
+        df['Likes'] = np.array([tweet.favorite_count for tweet in raw_tweets])
+        df['Retweets'] = np.array([tweet.retweet_count for tweet in raw_tweets])
+        df['In_Reply_to_Status_id'] = np.array([tweet.in_reply_to_status_id_str for tweet in raw_tweets])
+        df['In_Reply_to_Screen_Name'] = np.array([tweet.in_reply_to_screen_name for tweet in raw_tweets])
+        df['Location'] = np.array([tweet.user.location for tweet in raw_tweets])
+        df['Coordinates'] = np.array([tweet.coordinates for tweet in raw_tweets])
+        df['Source'] = np.array([tweet.source for tweet in raw_tweets])
+        df['Electoral_District'] = np.array([electorate_name for tweet in raw_tweets])
+        df['Party'] = np.array([party_name for tweet in raw_tweets])
+        df['State'] = np.array([state_name for tweet in raw_tweets])
         return df
 
     def politician_info_to_dataframe(self, user_info, state_name, electorate_name, party_name):
@@ -139,7 +192,9 @@ class TweetAnalyser():
         client = MongoClient("mongodb://admin:123@115.146.85.107/")
         db = client[db_name]
         collection = db[collection_name]
-        if operation_type == 'insert':
+        if operation_type == 'insert_one':
+            collection.insert_one(tweets_list)
+        elif operation_type == 'insert_many':
             collection.insert_many(tweets_list)
         elif operation_type == 'update':
             operations = []
@@ -163,3 +218,25 @@ class TweetAnalyser():
         db = client[db_name]
         collection = db[collection_name]
         return collection.find()
+
+    def find_mongo_by_date(self, db_name, collection_name, start, end):
+        """
+        The function is used to show all the data stored in MongoDB.
+        :param db_name: str
+            This string is used to set specific db name.
+        :param collection_name: string
+            This string is used to set specific collection name.
+        :param start: str
+            Specify start date.
+        :param end: str
+            Specify end date.
+
+        :return: list
+            A list of results.
+        """
+        # client = MongoClient('mongodb+srv://chen:123@nlptest-r26bl.gcp.mongodb.net/test?retryWrites=true')
+        client = MongoClient("mongodb://admin:123@115.146.85.107/")
+        db = client[db_name]
+        collection = db[collection_name]
+        # return collection.find({'Date': {'$lt': end}})
+        return collection.find({'Date': {'$lt': end, '$gte': start}})

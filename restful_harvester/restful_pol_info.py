@@ -67,7 +67,7 @@ class RestfulUserInfo(threading.Thread):
                 print('-----')
 
             df = TweetAnalyser().politician_info_to_dataframe(user_info, self.state_name, self.electorate_name,
-                                                              self.party_name, )
+                                                              self.party_name)
 
             if df.shape[0] != 0:
                 TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')

@@ -41,9 +41,9 @@ class TwitterAuthenticator():
 
         :return:
         """
-        auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-        auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-        # auth = AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        # auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        # auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+        auth = AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         return auth
 
 
@@ -103,8 +103,8 @@ if __name__ == "__main__":
     for screen_name in politician_list[:1]:
         print('============================================')
         print('Process: {}/{}'.format(politician_list.index(screen_name) + 1, len(politician_list)))
-        restful_mentioned = RestfulByMentioned(screen_name, 'capstone', 'restfulMentioned')
-        # restful_mentioned = RestfulByMentioned(screen_name, 'test', 'test1')
+        # restful_mentioned = RestfulByMentioned(screen_name, 'capstone', 'restfulMentioned')
+        restful_mentioned = RestfulByMentioned(screen_name, 'test', 'test1')
         print("Crawling tweets mentioned {}.".format(screen_name))
         restful_mentioned.start()
         restful_mentioned.join()

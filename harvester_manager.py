@@ -18,8 +18,8 @@ gc.enable()
 if __name__ == '__main__':
     start_time = time.time()
 
-    temp_df = pd.read_csv('data/new_politician_list.csv', usecols=['ScreenName'])
-    politician_list = temp_df['ScreenName'].dropna().tolist()
+    temp_df = pd.read_csv('data/full_politician_list.csv', usecols=['Screen_Name'])
+    politician_list = temp_df['Screen_Name'].dropna().tolist()
 
     print("Start restful crawling.")
     # for hashtag in hashtag_list:
@@ -32,8 +32,10 @@ if __name__ == '__main__':
     for screen_name in politician_list:  # ['HelenHaines1', 'RobertHolian']:
         print('============================================')
         print('Process: {}/{}'.format(politician_list.index(screen_name) + 1, len(politician_list)))
-        restful_mentioned = RestfulByMentioned(screen_name, 'capstone', 'restfulMentioned')
-        restful_replies = RestfulReplies(screen_name, 'capstone', 'restfulMentioned')
+        restful_mentioned = RestfulByMentioned(screen_name, 'capstone', 'streamingMentionedCorrectDate')
+        restful_replies = RestfulReplies(screen_name, 'capstone', 'streamingMentionedCorrectDate')
+        # restful_mentioned = RestfulByMentioned(screen_name, 'capstone', 'restfulMentioned')
+        # restful_replies = RestfulReplies(screen_name, 'capstone', 'restfulMentioned')
         # restful_pol_tweets = RestfulPolTweets(screen_name, 'capstone', 'restfulTweets')
         print("Crawling tweets mentioned {}.".format(screen_name))
         restful_mentioned.start()

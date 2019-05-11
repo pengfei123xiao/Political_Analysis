@@ -9,7 +9,7 @@ from tweepy import OAuthHandler, AppAuthHandler, TweepError, API
 import pandas as pd
 import sys
 sys.path.append('..')
-from analyser import tweet_analyser
+from analyser import functional_tools
 from ast import literal_eval  # Convert list-like string to list
 from multiprocessing import Process
 import threading
@@ -19,17 +19,23 @@ import gc
 gc.enable()
 
 # Twitter API Keys-Siyu
-# CONSUMER_KEY = "wWFHsJ71LrXoX0LRFNCVYxLoY"
-# CONSUMER_SECRET = "dpOn4LvtZ0MqxgtFZB0XXFKz9wK7csAHLkusJ8JasUJIxFt6Qm"
-# ACCESS_TOKEN = "1104525213847318529-S0OLx8OztXjSxeGCGITcGhVa2EMz5b"
-# ACCESS_TOKEN_SECRET = "wEAjXPqWPygScOzAc8RRwiHzeg1G0mGVt20qZLoJGQuDe"
+CONSUMER_KEY = "wWFHsJ71LrXoX0LRFNCVYxLoY"
+CONSUMER_SECRET = "dpOn4LvtZ0MqxgtFZB0XXFKz9wK7csAHLkusJ8JasUJIxFt6Qm"
+ACCESS_TOKEN = "1104525213847318529-S0OLx8OztXjSxeGCGITcGhVa2EMz5b"
+ACCESS_TOKEN_SECRET = "wEAjXPqWPygScOzAc8RRwiHzeg1G0mGVt20qZLoJGQuDe"
+
+# Twitter API Keys-yiru1
+# ACCESS_TOKEN = "987908747375726593-yp9g2tc5FJMfr54eIc8mI8mkboX9VNC"
+# ACCESS_TOKEN_SECRET = "hH5K46mLTHk5Yn51gesTnrq3YYUN5vGOBDjWx8PdBbdEm"
+# CONSUMER_KEY = "1RcIwPa92JvKPegrsRzSWzXht"
+# CONSUMER_SECRET = "AFceGbD4TzRGmqRz8oq65ovHIsAuG7WlwkzfsqEvz5WgYJDoUw"
 
 
 # Twitter API Keys-yiru
-CONSUMER_KEY = '9uWwELoYRA4loNboCqe4P7XZD'
-CONSUMER_SECRET = 'ZhIOn2XPAnVtDjbh4iVrANG4gq7zTCJdJZAAlDpPmKAFpNz4gF'
-ACCESS_TOKEN = '2344719422-4a94VSU2kjHzgFp1Kap9uoAAvE5R2n9vb4H5Atz'
-ACCESS_TOKEN_SECRET = 'O5H5r7QyOTct7yFFlePITJGcuIJPBmgyDBunIYRVjYELq'
+# CONSUMER_KEY = '9uWwELoYRA4loNboCqe4P7XZD'
+# CONSUMER_SECRET = 'ZhIOn2XPAnVtDjbh4iVrANG4gq7zTCJdJZAAlDpPmKAFpNz4gF'
+# ACCESS_TOKEN = '2344719422-4a94VSU2kjHzgFp1Kap9uoAAvE5R2n9vb4H5Atz'
+# ACCESS_TOKEN_SECRET = 'O5H5r7QyOTct7yFFlePITJGcuIJPBmgyDBunIYRVjYELq'
 
 
 # # # # TWITTER AUTHENTICATER # # # #
@@ -43,8 +49,8 @@ class TwitterAuthenticator():
 
         :return:
         """
-        # auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-        # auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+        #auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        #auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
         auth = AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)  # higher rate limit than OAuthHandler
         return auth
 
@@ -72,7 +78,7 @@ class RestfulHashtags(threading.Thread):
         max_id = None
         NUM_PER_QUERY = 100
         records_count = 0
-        analyser = tweet_analyser.TweetAnalyser()
+        f_tools = functional_tools.FunctionalTools()
 
         while True:
             try:
@@ -85,10 +91,10 @@ class RestfulHashtags(threading.Thread):
                     break
 
                 max_id = raw_tweets[-1].id - 1  # update max_id to harvester earlier data
-                df = analyser.tweets_to_dataframe(raw_tweets)
+                df = f_tools.tweets_to_dataframe(raw_tweets)
 
                 if df.shape[0] != 0:
-                    analyser.save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
+                    f_tools.save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
                     records_count += df.shape[0]
 
             except TweepError as e:
@@ -109,13 +115,18 @@ if __name__ == '__main__':
         for item in literal_eval(v):
             hashtag_list.append(item[0])
     hashtag_set = set(hashtag_list)
+    hashlist1 = ['putaustraliafirst', 'lestweforget', 'pefo', 'politas', 'climateelection',
+                 'cowpervotes', 'greennewdeal', 'greens', 'laborwide',
+                 'insiders', 'jasonscanes', 'kooyongvotes', 'qanda',
+                 'stopadani', 'stopadaniconvoy', 'thedrum', 'warringahvotes',
+                 'watergate', 'wentworthvotes', 'widebayvotes', 'anzacday', 'anzac', 'anzacday2019']
 
     count = 1
-    for hashtag in hashtag_set:  # ['puthatelast']:
+    for hashtag in hashlist1[:1]:  # hashtag_set:  # ['puthatelast']:
         print('============================================')
         print('Process: {}/{}'.format(count, len(hashtag_set)))
-        restful_hashtag = RestfulHashtags(hashtag, 'capstone', 'restfulByHashtag')
-        # restful_hashtag = RestfulHashtags(hashtag, 'test', 'test1')
+        # restful_hashtag = RestfulHashtags(hashtag, 'capstone', 'restfulByHashtag')
+        restful_hashtag = RestfulHashtags(hashtag, 'test', 'test99')
         print("Crawling tweets by {}.".format(hashtag))
         restful_hashtag.start()
         restful_hashtag.join()

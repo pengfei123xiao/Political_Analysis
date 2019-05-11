@@ -9,7 +9,7 @@ from tweepy import OAuthHandler, AppAuthHandler, API, TweepError
 import pandas as pd
 import sys
 sys.path.append('..')
-from analyser.tweet_analyser import TweetAnalyser
+from analyser import functional_tools
 from multiprocessing import Process
 import threading
 import gc
@@ -41,9 +41,9 @@ class TwitterAuthenticator():
 
         :return:
         """
-        auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-        auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-        # auth = AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        # auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        # auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+        auth = AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         return auth
 
 
@@ -69,6 +69,7 @@ class RestfulByMentioned(threading.Thread):
         max_id = None
         TWEETS_PER_QUERY = 100
         records_count = 0
+        f_tools = functional_tools.FunctionalTools()
 
         while True:
             try:
@@ -81,11 +82,11 @@ class RestfulByMentioned(threading.Thread):
                     break
 
                 max_id = raw_tweets[-1].id - 1  # update max_id to harvester earlier data
-                df = TweetAnalyser().tweets_to_dataframe(raw_tweets)
+                df = f_tools.tweets_to_dataframe(raw_tweets)
 
                 if df.shape[0] != 0:
                     records_count += df.shape[0]
-                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
+                    f_tools.save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
 
             except TweepError as e1:
                 print('Restful by mentioned error:')
@@ -103,8 +104,8 @@ if __name__ == "__main__":
     for screen_name in politician_list[:1]:
         print('============================================')
         print('Process: {}/{}'.format(politician_list.index(screen_name) + 1, len(politician_list)))
-        restful_mentioned = RestfulByMentioned(screen_name, 'capstone', 'restfulMentioned')
-        # restful_mentioned = RestfulByMentioned(screen_name, 'test', 'test1')
+        # restful_mentioned = RestfulByMentioned(screen_name, 'capstone', 'restfulMentioned')
+        restful_mentioned = RestfulByMentioned(screen_name, 'test', 'test99')
         print("Crawling tweets mentioned {}.".format(screen_name))
         restful_mentioned.start()
         restful_mentioned.join()

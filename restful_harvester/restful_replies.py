@@ -9,7 +9,7 @@ from tweepy import OAuthHandler, AppAuthHandler, TweepError, API
 import pandas as pd
 import sys
 sys.path.append('..')
-from analyser.tweet_analyser import TweetAnalyser
+from analyser import functional_tools
 from multiprocessing import Process
 import threading
 import gc
@@ -21,6 +21,7 @@ CONSUMER_KEY = "wWFHsJ71LrXoX0LRFNCVYxLoY"
 CONSUMER_SECRET = "dpOn4LvtZ0MqxgtFZB0XXFKz9wK7csAHLkusJ8JasUJIxFt6Qm"
 ACCESS_TOKEN = "1104525213847318529-S0OLx8OztXjSxeGCGITcGhVa2EMz5b"
 ACCESS_TOKEN_SECRET = "wEAjXPqWPygScOzAc8RRwiHzeg1G0mGVt20qZLoJGQuDe"
+
 
 # # Twitter API Keys-yiru
 # CONSUMER_KEY = '9uWwELoYRA4loNboCqe4P7XZD'
@@ -40,9 +41,9 @@ class TwitterAuthenticator():
 
         :return:
         """
-        auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-        auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-        # auth = AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        # auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        # auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+        auth = AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         return auth
 
 
@@ -69,11 +70,12 @@ class RestfulReplies(threading.Thread):
         max_id = None
         NUM_PER_QUERY = 100
         records_count = 0
+        f_tools = functional_tools.FunctionalTools()
 
         while True:
             try:
-                raw_tweets = self.twitter_api.search(q='to:' + self.SCREEN_NAME,  # geocode="-33.854,151.216,180.00km",
-                                                     tweet_mode='extended', max_id=max_id, count=NUM_PER_QUERY)
+                raw_tweets = self.twitter_api.search(q='to:' + self.SCREEN_NAME, tweet_mode='extended', max_id=max_id,
+                                                     count=NUM_PER_QUERY)
                 if len(raw_tweets) == 0:
                     print("No more replies found.")
                     print('In total {} replies are stored in DB.'.format(records_count))
@@ -81,10 +83,10 @@ class RestfulReplies(threading.Thread):
                     break
 
                 max_id = raw_tweets[-1].id - 1  # update max_id to harvester earlier data
-                df = TweetAnalyser().tweets_to_dataframe(raw_tweets)
+                df = f_tools.tweets_to_dataframe(raw_tweets)
 
                 if df.shape[0] != 0:
-                    TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
+                    f_tools.save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
                     records_count += df.shape[0]
 
             except TweepError as e1:
@@ -104,8 +106,8 @@ if __name__ == "__main__":
         print('============================================')
         print('Process: {}/{}'.format(politician_list.index(screen_name) + 1, len(politician_list)))
         # restful_replies = RestfulReplies(screen_name, 'capstone', 'restfulMentioned')
-        restful_replies = RestfulReplies(screen_name, 'test', 'test1')
-        print("Crawling replies to  {}.".format(screen_name))
+        restful_replies = RestfulReplies(screen_name, 'test', 'test99')
+        print("Crawling replies to {}.".format(screen_name))
         restful_replies.start()
         restful_replies.join()
         # df.to_json('Replies_Info.json', orient='records')

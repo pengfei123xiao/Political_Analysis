@@ -18,7 +18,6 @@ import gc
 
 gc.enable()
 
-
 if __name__ == '__main__':
     f_tools = functional_tools.FunctionalTools()
     start_time = time.time()
@@ -30,7 +29,7 @@ if __name__ == '__main__':
     politician_df = pd.DataFrame(list(politician_from_mongo))
 
     # create daily timestamp
-    date_list = pd.date_range(start='2019-04-13', end='2019-04-15', freq='D')
+    date_list = pd.date_range(start='2019-04-13', end='2019-05-16', freq='D')
     result_dict = {}
     pol_result = []
     pol_toptag_result = []
@@ -48,6 +47,7 @@ if __name__ == '__main__':
 
         totalMention_from_mongo = f_tools.find_mongo_by_date('capstone', 'streamingMentionedCorrectDate', start, end)
         totalMention_df = pd.DataFrame(list(totalMention_from_mongo))
+        user_tweets_df = user_tweets_df.append(totalMention_df, ignore_index=True)
         print('Daily tweets loaded.')
 
         daily_analysis = tweets_analysis.TweetsAnalysis(politician_df, totalMention_df, pol_tweets_df)
@@ -71,4 +71,5 @@ if __name__ == '__main__':
     result_dict['Top_Tags_of_Politicians'] = pol_toptag_result
     result_dict['Top_Tags_of_Users'] = user_toptag_result
     result_dict['Daily_Politician'] = pol_result
-    f_tools.save_data(result_dict, 'test', 'test1', 'insert_one')
+    f_tools.drop_collection('test', 'daily')
+    f_tools.save_data(result_dict, 'test', 'daily', 'insert_one')

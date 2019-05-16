@@ -16,7 +16,7 @@ sys.path.append('..')
 from analyser import functional_tools
 from multiprocessing import Process
 import threading
-import datetime
+from datetime import datetime
 import time
 import gc
 
@@ -85,17 +85,27 @@ class RestfulUserInfo(threading.Thread):
 
 
 if __name__ == "__main__":
+    f_tools = functional_tools.FunctionalTools()
     temp_df = pd.read_csv('../data/full_politician_list.csv',
                           usecols=['Name', 'State', 'Electorate', 'Party', 'Screen_Name'])
     politician_list = temp_df['Screen_Name'].dropna().tolist()
     state_list = temp_df['State'].dropna().tolist()
     ele_list = temp_df['Electorate'].dropna().tolist()
     party_list = temp_df['Party'].dropna().tolist()
-    for i in range(len(politician_list[:1])):
+    result_dict = {}
+    for i in range(len(politician_list)):
         print('============================================')
         print('Process: {}/{}'.format(i + 1, len(politician_list)))
-        restful_user_info = RestfulUserInfo(politician_list[i], 'test', 'politicianInfo', state_list[i], ele_list[i],
+        # restful_user_info = RestfulUserInfo(politician_list[i], 'test', 'test', state_list[i], ele_list[i],
+        #                                     party_list[i])
+        restful_user_info = RestfulUserInfo(politician_list[i], 'capstone', 'politicianInfo', state_list[i], ele_list[i],
                                             party_list[i])
         print("Crawling information of {}.".format(politician_list[i]))
         restful_user_info.start()
         restful_user_info.join()
+
+    politician_from_mongo = f_tools.find_data('capstone', 'politicianInfo')
+    politician_df = pd.DataFrame(list(politician_from_mongo))
+    result_dict['Date'] = datetime.today()
+    result_dict['data'] = politician_df.to_dict('records')
+    f_tools.save_data(result_dict, 'capstone', 'dailyPolInfo', 'insert_one')

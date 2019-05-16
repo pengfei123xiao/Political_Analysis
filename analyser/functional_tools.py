@@ -189,7 +189,8 @@ class FunctionalTools():
         :return: null
         """
         # client = MongoClient('mongodb+srv://chen:123@nlptest-r26bl.gcp.mongodb.net/test?retryWrites=true')
-        client = MongoClient("mongodb://admin:123@115.146.85.107/")
+        client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
+        # client = MongoClient("mongodb://admin:123@103.6.254.48/")  # DB
         db = client[db_name]
         collection = db[collection_name]
         if operation_type == 'insert_one':
@@ -214,7 +215,8 @@ class FunctionalTools():
             A list of results.
         """
         # client = MongoClient('mongodb+srv://chen:123@nlptest-r26bl.gcp.mongodb.net/test?retryWrites=true')
-        client = MongoClient("mongodb://admin:123@115.146.85.107/")
+        client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
+        # client = MongoClient("mongodb://admin:123@103.6.254.48/")  # DB
         db = client[db_name]
         collection = db[collection_name]
         return collection.find()
@@ -240,3 +242,10 @@ class FunctionalTools():
         collection = db[collection_name]
         # return collection.find({'Date': {'$lt': end}})
         return collection.find({'Date': {'$lt': end, '$gte': start}})
+
+    def drop_collection(self, db_name, collection_name):
+        client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
+        # client = MongoClient("mongodb://admin:123@103.6.254.48/") #DB
+        db = client[db_name]
+        collection = db[collection_name]
+        collection.drop()

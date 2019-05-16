@@ -10,12 +10,16 @@ import pandas as pd
 import numpy as np
 from functools import reduce
 from pymongo import MongoClient, UpdateOne
-from analyser.tweet_analyser import TweetAnalyser
+import sys
+
+sys.path.append('..')
+from analyser import functional_tools
 from multiprocessing import Process
 import threading
 import datetime
 import time
 import gc
+
 gc.enable()
 
 # Twitter API Keys-yiru1
@@ -43,7 +47,7 @@ class RestfulUserInfo(threading.Thread):
 
     """
 
-    def __init__(self, screen_name, db_name, collection_name):
+    def __init__(self, screen_name, db_name, collection_name, state_name, electorate_name, party_name):
         """
         :param twitter_user:
         """
@@ -54,23 +58,23 @@ class RestfulUserInfo(threading.Thread):
         self.SCREEN_NAME = screen_name
         self.db_name = db_name
         self.collection_name = collection_name
+        self.state_name = state_name
+        self.electorate_name = electorate_name
+        self.party_name = party_name
 
     def run(self):
-        # max_id = None
-        # TWEETS_PER_QUERY = 100
-        # records_count = 0
-
-        # while True:
+        f_tools = functional_tools.FunctionalTools()
         try:
             user_info = self.twitter_api.get_user(self.SCREEN_NAME)
             if not user_info:
                 print("No user information found.")
                 print('-----')
 
-            df = TweetAnalyser().politician_info_to_dataframe(user_info)
+            df = f_tools.politician_info_to_dataframe(user_info, self.state_name, self.electorate_name,
+                                                      self.party_name)
 
             if df.shape[0] != 0:
-                TweetAnalyser().save_data(df.to_dict('records'), self.db_name, self.collection_name, 'restful')
+                f_tools.save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
 
         except TweepError as e1:
             print('Restful by user info error:')
@@ -81,13 +85,17 @@ class RestfulUserInfo(threading.Thread):
 
 
 if __name__ == "__main__":
-    temp_df = pd.read_csv('../data/new_politician_list.csv', usecols=['ScreenName'])
-    politician_list = temp_df['ScreenName'].dropna().tolist()
-    for screen_name in politician_list:
+    temp_df = pd.read_csv('../data/full_politician_list.csv',
+                          usecols=['Name', 'State', 'Electorate', 'Party', 'Screen_Name'])
+    politician_list = temp_df['Screen_Name'].dropna().tolist()
+    state_list = temp_df['State'].dropna().tolist()
+    ele_list = temp_df['Electorate'].dropna().tolist()
+    party_list = temp_df['Party'].dropna().tolist()
+    for i in range(len(politician_list[:1])):
         print('============================================')
-        print('Process: {}/{}'.format(politician_list.index(screen_name) + 1, len(politician_list)))
-        restful_user_info = RestfulUserInfo(screen_name, 'capstone', 'politicianInfo')
-        print("Crawling information of {}.".format(screen_name))
+        print('Process: {}/{}'.format(i + 1, len(politician_list)))
+        restful_user_info = RestfulUserInfo(politician_list[i], 'test', 'politicianInfo', state_list[i], ele_list[i],
+                                            party_list[i])
+        print("Crawling information of {}.".format(politician_list[i]))
         restful_user_info.start()
         restful_user_info.join()
-

@@ -23,10 +23,11 @@ class FunctionalTools():
     """
     Functionality for analyzing and categorizing content from tweets.
     """
-    def timezone_convert_streaming(self,utc_str):
-            au_tz = timezone('Australia/Sydney')
-            au_dt = datetime.strptime(utc_str,'%a %b %d %H:%M:%S %z %Y').astimezone(au_tz)
-            return au_dt
+
+    def timezone_convert_streaming(self, utc_str):
+        au_tz = timezone('Australia/Sydney')
+        au_dt = datetime.strptime(utc_str, '%a %b %d %H:%M:%S %z %Y').astimezone(au_tz)
+        return au_dt
 
     def timezone_convert(self, utc_dt):
         au_tz = timezone('Australia/Sydney')
@@ -71,14 +72,17 @@ class FunctionalTools():
                 hastags.extend([item['text'] for item in raw_tweet['entities']['hashtags']])
                 hastags = list(set(hastags))
                 # print(3)
-                required_data.append({'ID':raw_tweet['id_str'], 'Screen_Name':raw_tweet['user']['screen_name'],
-                            'Date':self.timezone_convert_streaming(raw_tweet['created_at']),
-                            'Tweets':content, 'Content_Sentiment':self.analyze_sentiment(raw_tweet['text']),
-                            'Length':len(raw_tweet['text']),'Language':raw_tweet['lang'],'Likes':raw_tweet['favorite_count'],
-                            'Retweets':raw_tweet['retweet_count'],'Mentioned_Screen_Name':mentioned_screen_name_list,
-                            'In_Reply_to_Screen_Name':raw_tweet['in_reply_to_screen_name'],'In_Reply_to_Status_id':raw_tweet['in_reply_to_status_id_str'],
-                            'Hashtags':hastags,'Location':raw_tweet['user']['location'],
-                            'Coordinates':raw_tweet['coordinates'],'Source':raw_tweet['source']})
+                required_data.append({'ID': raw_tweet['id_str'], 'Screen_Name': raw_tweet['user']['screen_name'],
+                                      'Date': self.timezone_convert_streaming(raw_tweet['created_at']),
+                                      'Tweets': content, 'Content_Sentiment': self.analyze_sentiment(raw_tweet['text']),
+                                      'Length': len(raw_tweet['text']), 'Language': raw_tweet['lang'],
+                                      'Likes': raw_tweet['favorite_count'],
+                                      'Retweets': raw_tweet['retweet_count'],
+                                      'Mentioned_Screen_Name': mentioned_screen_name_list,
+                                      'In_Reply_to_Screen_Name': raw_tweet['in_reply_to_screen_name'],
+                                      'In_Reply_to_Status_id': raw_tweet['in_reply_to_status_id_str'],
+                                      'Hashtags': hastags, 'Location': raw_tweet['user']['location'],
+                                      'Coordinates': raw_tweet['coordinates'], 'Source': raw_tweet['source']})
         return required_data
 
     def tweets_to_dataframe(self, raw_tweets):
@@ -192,7 +196,6 @@ class FunctionalTools():
         :param party_name: str
             Party name of a politician.
 
-
         :return: dataframe
             Structured dataframe.
         """
@@ -228,7 +231,8 @@ class FunctionalTools():
         :return: null
         """
         try:
-            client = MongoClient("mongodb://admin:123@115.146.85.107/")
+            client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
+            # client = MongoClient("mongodb://admin:123@103.6.254.48/")  # DB
             db = client[db_name]
             collection = db[collection_name]
             if operation_type == 'insert_one':

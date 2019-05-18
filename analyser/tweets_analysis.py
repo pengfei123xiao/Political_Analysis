@@ -63,10 +63,6 @@ class TweetsAnalysis():
         for index, s_list in self.mentioned_df['Mentioned_Screen_Name'].iteritems():
             if screen_name in s_list:
                 mentioned_count += 1
-                # sen_sum += self.mentioned_df['Content_Sentiment'].iloc[index]
-                # if self.mentioned_df['In_Reply_to_Screen_Name'].iloc[index] is not None and screen_name in \
-                #         self.mentioned_df['In_Reply_to_Screen_Name'].iloc[index]:
-                #     reply_count += 1
                 if self.mentioned_df['Content_Sentiment'].iloc[index] == 1:
                     pos += 1
                 elif self.mentioned_df['Content_Sentiment'].iloc[index] == 0:
@@ -162,6 +158,11 @@ class TweetsAnalysis():
         return self.politician_df
 
     def count_popular_hashtag(self, tweets_df):
+        """
+        Calculate top six hashtags.
+        :param tweets_df:
+        :return:
+        """
         #  tweet_with_tag_df = self.tweets_df[self.tweets_df['Hashtags'].astype(str) != '[]'].copy()
         tweet_with_tag_df = tweets_df[tweets_df['Hashtags'].astype(str) != '[]'].copy()
         tag_list = []

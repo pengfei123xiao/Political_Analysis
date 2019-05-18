@@ -16,7 +16,7 @@ sys.path.append('..')
 from analyser import functional_tools
 from multiprocessing import Process
 import threading
-from datetime import datetime
+import datetime
 import time
 import gc
 
@@ -106,6 +106,6 @@ if __name__ == "__main__":
 
     politician_from_mongo = f_tools.find_data('capstone', 'politicianInfo')
     politician_df = pd.DataFrame(list(politician_from_mongo))
-    result_dict['Date'] = datetime.today()
+    result_dict['Date'] = datetime.date.today()
     result_dict['data'] = politician_df.to_dict('records')
     f_tools.save_data(result_dict, 'capstone', 'dailyPolInfo', 'insert_one')

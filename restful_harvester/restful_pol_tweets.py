@@ -69,9 +69,9 @@ class RestfulPolTweets(threading.Thread):
 
     def run(self):
         max_id = None
-        TWEETS_PER_QUERY = 150
+        TWEETS_PER_QUERY = 60
         records_count = 0
-        start_date = datetime.datetime(2019, 4, 10, 0, 0, 0)
+        start_date = datetime.date.today() - datetime.timedelta(days=1)
         f_tools = functional_tools.FunctionalTools()
 
         while True:
@@ -84,7 +84,6 @@ class RestfulPolTweets(threading.Thread):
                     print('-----')
                     break
                 max_id = raw_tweets[-1].id - 1  # update max_id to harvester earlier data
-                # df = TweetAnalyser().tweets_to_dataframe(raw_tweets)
                 df = f_tools.pol_tweets_to_dataframe(raw_tweets, self.state_name, self.electorate_name,
                                                      self.party_name)
 

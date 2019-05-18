@@ -81,7 +81,7 @@ class RestfulHashtags(threading.Thread):
         max_id = None
         NUM_PER_QUERY = 100
         records_count = 0
-        start_date = datetime.date.today() - datetime.timedelta(days=1)
+        start_date = datetime.datetime.today() - datetime.timedelta(days=1)
         f_tools = functional_tools.FunctionalTools()
 
         while True:

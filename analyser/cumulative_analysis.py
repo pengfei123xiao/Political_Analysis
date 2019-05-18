@@ -34,7 +34,6 @@ if __name__ == '__main__':
     start_date_str = (datetime.date.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     end_date_str = datetime.date.today().strftime('%Y-%m-%d')
     date_list = pd.date_range(start=start_date_str, end=end_date_str, freq='D')
-
     # date_list = pd.date_range(start='2019-05-17', end='2019-05-18', freq='D')
 
     for i in range(len(date_list) - 1):

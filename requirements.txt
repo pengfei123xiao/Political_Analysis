@@ -6,4 +6,4 @@ pymongo[srv]==3.7.2
 tqdm==4.31.1
 emoji==0.5.2
 swifter==0.286
-
+googlemaps==3.0.2

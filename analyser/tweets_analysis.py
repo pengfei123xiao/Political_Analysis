@@ -36,20 +36,55 @@ class TweetsAnalysis():
         self.pol_tweets_df = pol_tweets_df
         self.origin_pol_tweets_df = self.pol_tweets_df[~self.pol_tweets_df['Tweets'].str.contains('RT')]
 
+    # def statistical_count(self, screen_name):
+    #     mentioned_count, reply_count, sen_sum = 0, 0, 0
+    #     pos, neu, neg = 0, 0, 0
+    #     for index, s_list in self.mentioned_df['Mentioned_Screen_Name'].iteritems():
+    #         if screen_name in s_list:
+    #             mentioned_count += 1
+    #             sen_sum += self.mentioned_df['Content_Sentiment'].iloc[index]
+    #             if self.mentioned_df['In_Reply_to_Screen_Name'].iloc[index] is not None and screen_name in \
+    #                     self.mentioned_df['In_Reply_to_Screen_Name'].iloc[index]:
+    #                 reply_count += 1
+    #             if self.mentioned_df['Content_Sentiment'].iloc[index] == 1:
+    #                 pos += 1
+    #             elif self.mentioned_df['Content_Sentiment'].iloc[index] == 0:
+    #                 neu += 1
+    #             else:
+    #                 neg += 1
+    #     mentioned_count = mentioned_count - reply_count
+    #     return [mentioned_count, sen_sum, pos, neu, neg, reply_count]
+
     def statistical_count(self, screen_name):
-        reply_count, sen_sum = 0, 0
+        mentioned_count, reply_count, sen_sum = 0, 0, 0
         pos, neu, neg = 0, 0, 0
+        pos1, neu1, neg1 = 0, 0, 0
+        mentioned_user_dic = {}
         for index, s_list in self.mentioned_df['Mentioned_Screen_Name'].iteritems():
             if screen_name in s_list:
-                reply_count += 1
-                sen_sum += self.mentioned_df['Content_Sentiment'].iloc[index]
+                mentioned_count += 1
                 if self.mentioned_df['Content_Sentiment'].iloc[index] == 1:
                     pos += 1
                 elif self.mentioned_df['Content_Sentiment'].iloc[index] == 0:
                     neu += 1
                 else:
                     neg += 1
-        return [reply_count, sen_sum, pos, neu, neg]
+                user_screen_name = self.mentioned_df['Screen_Name'].iloc[index]
+                if user_screen_name in mentioned_user_dic:
+                    mentioned_user_dic[user_screen_name][self.mentioned_df['Content_Sentiment'].iloc[index] + 1] += 1
+                    # [neg, neu, pos]
+                else:
+                    mentioned_user_dic[user_screen_name] = [0, 0, 0]
+                    mentioned_user_dic[user_screen_name][self.mentioned_df['Content_Sentiment'].iloc[index] + 1] += 1
+        for i, v in mentioned_user_dic.items():
+            if v[2] - v[0] > 0:
+                pos1 += 1
+            elif v[2] - v[0] == 0:
+                neu1 += 1
+            else:
+                neg1 += 1
+        mentioned_count = mentioned_count - reply_count
+        return [mentioned_count, pos1, neu1, neg1, pos, neu, neg]
 
     def word_frequency(self, name, column):
         """
@@ -104,13 +139,17 @@ class TweetsAnalysis():
             lambda x: self.statistical_count(x))
 
         # ===daily reply count===
-        self.politician_df['Reply_Count'] = self.politician_df['Statistical_Count'].apply(lambda x: x[0])
+        self.politician_df['Mentioned_Count'] = self.politician_df['Statistical_Count'].apply(lambda x: x[0])
+        # self.politician_df['Reply_Count'] = self.politician_df['Statistical_Count'].apply(lambda x: x[5])
         # ===sentiment sum count===
-        self.politician_df['Sentiment_Sum'] = self.politician_df['Statistical_Count'].apply(lambda x: x[1])
+        # self.politician_df['Sentiment_Sum'] = self.politician_df['Statistical_Count'].apply(lambda x: x[1])
         # ===sentiment distribution===
-        self.politician_df['Sentiment_Pos'] = self.politician_df['Statistical_Count'].apply(lambda x: x[2])
-        self.politician_df['Sentiment_Neu'] = self.politician_df['Statistical_Count'].apply(lambda x: x[3])
-        self.politician_df['Sentiment_Neg'] = self.politician_df['Statistical_Count'].apply(lambda x: x[4])
+        self.politician_df['Sentiment_Pos'] = self.politician_df['Statistical_Count'].apply(lambda x: x[1])
+        self.politician_df['Sentiment_Neu'] = self.politician_df['Statistical_Count'].apply(lambda x: x[2])
+        self.politician_df['Sentiment_Neg'] = self.politician_df['Statistical_Count'].apply(lambda x: x[3])
+        self.politician_df['Sentiment_Pos_raw'] = self.politician_df['Statistical_Count'].apply(lambda x: x[4])
+        self.politician_df['Sentiment_Neu_raw'] = self.politician_df['Statistical_Count'].apply(lambda x: x[5])
+        self.politician_df['Sentiment_Neg_raw'] = self.politician_df['Statistical_Count'].apply(lambda x: x[6])
         self.politician_df.drop(columns=['Statistical_Count'], inplace=True)
 
         """word cloud"""
@@ -119,6 +158,11 @@ class TweetsAnalysis():
         return self.politician_df
 
     def count_popular_hashtag(self, tweets_df):
+        """
+        Calculate top six hashtags.
+        :param tweets_df:
+        :return:
+        """
         #  tweet_with_tag_df = self.tweets_df[self.tweets_df['Hashtags'].astype(str) != '[]'].copy()
         tweet_with_tag_df = tweets_df[tweets_df['Hashtags'].astype(str) != '[]'].copy()
         tag_list = []

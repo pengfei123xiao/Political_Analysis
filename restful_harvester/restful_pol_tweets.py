@@ -8,6 +8,7 @@
 from tweepy import OAuthHandler, AppAuthHandler, API, TweepError
 import pandas as pd
 import sys
+
 sys.path.append('..')
 from analyser import functional_tools
 from multiprocessing import Process
@@ -50,9 +51,6 @@ class TwitterAuthenticator():
 
 # class RestfulCrawler(Process):
 class RestfulPolTweets(threading.Thread):
-    """
-
-    """
 
     def __init__(self, screen_name, db_name, collection_name, state_name, electorate_name, party_name):
         """
@@ -71,9 +69,9 @@ class RestfulPolTweets(threading.Thread):
 
     def run(self):
         max_id = None
-        TWEETS_PER_QUERY = 200
+        TWEETS_PER_QUERY = 60
         records_count = 0
-        start_date = datetime.datetime(2019, 4, 10, 0, 0, 0)
+        start_date = datetime.datetime.today() - datetime.timedelta(days=1)
         f_tools = functional_tools.FunctionalTools()
 
         while True:
@@ -86,9 +84,8 @@ class RestfulPolTweets(threading.Thread):
                     print('-----')
                     break
                 max_id = raw_tweets[-1].id - 1  # update max_id to harvester earlier data
-                # df = TweetAnalyser().tweets_to_dataframe(raw_tweets)
                 df = f_tools.pol_tweets_to_dataframe(raw_tweets, self.state_name, self.electorate_name,
-                                                               self.party_name)
+                                                     self.party_name)
 
                 if df.shape[0] != 0:
                     records_count += df.shape[0]
@@ -117,12 +114,12 @@ if __name__ == "__main__":
     ele_list = temp_df['Electorate'].dropna().tolist()
     party_list = temp_df['Party'].dropna().tolist()
 
-    for i in range(len(politician_list[:1])):
+    for i in range(len(politician_list)):
         print('============================================')
         print('Process: {}/{}'.format(i + 1, len(politician_list)))
-        restful_crawler = RestfulPolTweets(politician_list[i], 'test', 'test99', state_list[i], ele_list[i], party_list[i])
-        # restful_crawler = RestfulPolTweets(politician_list[i], 'capstone', 'restfulTweets', state_list[i], ele_list[i],
-        #                                    party_list[i])
+        # restful_crawler = RestfulPolTweets(politician_list[i], 'test', 'test99', state_list[i], ele_list[i], party_list[i])
+        restful_crawler = RestfulPolTweets(politician_list[i], 'capstone', 'restfulTweets', state_list[i], ele_list[i],
+                                           party_list[i])
         print("Crawling tweets of {}.".format(politician_list[i]))
         restful_crawler.start()
         restful_crawler.join()

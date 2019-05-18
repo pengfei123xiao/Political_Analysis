@@ -13,6 +13,8 @@ from textblob import TextBlob
 import emoji
 import re
 import gc
+import json
+from datetime import datetime
 
 gc.enable()
 
@@ -21,6 +23,11 @@ class FunctionalTools():
     """
     Functionality for analyzing and categorizing content from tweets.
     """
+
+    def timezone_convert_streaming(self, utc_str):
+        au_tz = timezone('Australia/Sydney')
+        au_dt = datetime.strptime(utc_str, '%a %b %d %H:%M:%S %z %Y').astimezone(au_tz)
+        return au_dt
 
     def timezone_convert(self, utc_dt):
         au_tz = timezone('Australia/Sydney')
@@ -41,6 +48,48 @@ class FunctionalTools():
             return 0
         else:
             return -1
+
+    def filter_tweet_streaming(self, raw_tweets_str):
+        required_data = []
+        for raw_tweet_str in raw_tweets_str:
+            raw_tweet = json.loads(raw_tweet_str)
+            if 'limit' not in raw_tweet:
+                mentioned_screen_name_list = [user['screen_name'] for user in raw_tweet['entities']['user_mentions']]
+                # print(1)
+                hashtags = []
+
+                if 'extended_tweet' in raw_tweet:
+                    print("extended_tweets")
+                    content = raw_tweet['extended_tweet']['full_text']
+                    content_sentiment = self.analyze_sentiment(content)
+                    hashtags.extend([item['text'] for item in raw_tweet['extended_tweet']['entities']['hashtags']])
+                else:
+                    content = raw_tweet['text']
+                    content_sentiment = self.analyze_sentiment(content)
+                    hashtags.extend([item['text'] for item in raw_tweet['entities']['hashtags']])
+
+                if 'retweeted_status' in raw_tweet:
+                    if 'extended_tweet' in raw_tweet['retweeted_status']:
+                        text = raw_tweet['retweeted_status']['extended_tweet']['full_text']
+                    else:
+                        text = raw_tweet['retweeted_status']['text']
+                    content = content + 'RT @' + raw_tweet['retweeted_status']['user']['screen_name'] + ': ' + text
+                    # hashtags_retweeted =
+                    hashtags.extend([item['text'] for item in raw_tweet['retweeted_status']['entities']['hashtags']])
+
+                hashtags = list(set(hashtags))
+                required_data.append({'ID':raw_tweet['id_str'], 'Screen_Name':raw_tweet['user']['screen_name'],
+                            'Date':self.timezone_convert_streaming(raw_tweet['created_at']),
+                            'Tweets':content, 'Content_Sentiment':content_sentiment,
+                            'Length':len(raw_tweet['text']),'Language':raw_tweet['lang'],
+                            'Likes':raw_tweet['favorite_count'],
+                            'Retweets':raw_tweet['retweet_count'],
+                            'Mentioned_Screen_Name':mentioned_screen_name_list,
+                            'In_Reply_to_Screen_Name':raw_tweet['in_reply_to_screen_name'],
+                            'In_Reply_to_Status_id':raw_tweet['in_reply_to_status_id_str'],
+                            'Hashtags':hashtags,'Location':raw_tweet['user']['location'],
+                            'Coordinates':raw_tweet['coordinates'],'Source':raw_tweet['source']})
+        return required_data
 
     def tweets_to_dataframe(self, raw_tweets):
         """
@@ -153,7 +202,6 @@ class FunctionalTools():
         :param party_name: str
             Party name of a politician.
 
-
         :return: dataframe
             Structured dataframe.
         """
@@ -188,19 +236,22 @@ class FunctionalTools():
 
         :return: null
         """
-        # client = MongoClient('mongodb+srv://chen:123@nlptest-r26bl.gcp.mongodb.net/test?retryWrites=true')
-        client = MongoClient("mongodb://admin:123@115.146.85.107/")
-        db = client[db_name]
-        collection = db[collection_name]
-        if operation_type == 'insert_one':
-            collection.insert_one(tweets_list)
-        elif operation_type == 'insert_many':
-            collection.insert_many(tweets_list)
-        elif operation_type == 'update':
-            operations = []
-            for item in tweets_list:
-                operations.append(UpdateOne({'ID': item['ID']}, {'$set': item}, upsert=True))
-            collection.bulk_write(operations, ordered=False)
+        try:
+            client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
+            # client = MongoClient("mongodb://admin:123@103.6.254.48/")  # DB
+            db = client[db_name]
+            collection = db[collection_name]
+            if operation_type == 'insert_one':
+                collection.insert_one(tweets_list)
+            elif operation_type == 'insert_many':
+                collection.insert_many(tweets_list)
+            elif operation_type == 'update':
+                operations = []
+                for item in tweets_list:
+                    operations.append(UpdateOne({'ID': item['ID']}, {'$set': item}, upsert=True))
+                collection.bulk_write(operations, ordered=False)
+        except Exception as e:
+            print(e)
 
     def find_data(self, db_name, collection_name):
         """
@@ -214,7 +265,8 @@ class FunctionalTools():
             A list of results.
         """
         # client = MongoClient('mongodb+srv://chen:123@nlptest-r26bl.gcp.mongodb.net/test?retryWrites=true')
-        client = MongoClient("mongodb://admin:123@115.146.85.107/")
+        client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
+        # client = MongoClient("mongodb://admin:123@103.6.254.48/")  # DB
         db = client[db_name]
         collection = db[collection_name]
         return collection.find()
@@ -240,3 +292,10 @@ class FunctionalTools():
         collection = db[collection_name]
         # return collection.find({'Date': {'$lt': end}})
         return collection.find({'Date': {'$lt': end, '$gte': start}})
+
+    def drop_collection(self, db_name, collection_name):
+        client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
+        # client = MongoClient("mongodb://admin:123@103.6.254.48/") #DB
+        db = client[db_name]
+        collection = db[collection_name]
+        collection.drop()

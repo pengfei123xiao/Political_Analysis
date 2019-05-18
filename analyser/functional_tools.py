@@ -56,33 +56,39 @@ class FunctionalTools():
             if 'limit' not in raw_tweet:
                 mentioned_screen_name_list = [user['screen_name'] for user in raw_tweet['entities']['user_mentions']]
                 # print(1)
-                hastags = []
+                hashtags = []
+
+                if 'extended_tweet' in raw_tweet:
+                    print("extended_tweets")
+                    content = raw_tweet['extended_tweet']['full_text']
+                    content_sentiment = self.analyze_sentiment(content)
+                    hashtags.extend([item['text'] for item in raw_tweet['extended_tweet']['entities']['hashtags']])
+                else:
+                    content = raw_tweet['text']
+                    content_sentiment = self.analyze_sentiment(content)
+                    hashtags.extend([item['text'] for item in raw_tweet['entities']['hashtags']])
+
                 if 'retweeted_status' in raw_tweet:
                     if 'extended_tweet' in raw_tweet['retweeted_status']:
                         text = raw_tweet['retweeted_status']['extended_tweet']['full_text']
                     else:
                         text = raw_tweet['retweeted_status']['text']
-                    content = 'RT @' + raw_tweet['retweeted_status']['user']['screen_name'] + ': ' + text
+                    content = content + 'RT @' + raw_tweet['retweeted_status']['user']['screen_name'] + ': ' + text
                     # hashtags_retweeted =
-                    hastags.extend([item['text'] for item in raw_tweet['retweeted_status']['entities']['hashtags']])
-                else:
-                    content = raw_tweet['text']
-                # print(2)
-                # hashtags_origin =
-                hastags.extend([item['text'] for item in raw_tweet['entities']['hashtags']])
-                hastags = list(set(hastags))
-                # print(3)
-                required_data.append({'ID': raw_tweet['id_str'], 'Screen_Name': raw_tweet['user']['screen_name'],
-                                      'Date': self.timezone_convert_streaming(raw_tweet['created_at']),
-                                      'Tweets': content, 'Content_Sentiment': self.analyze_sentiment(raw_tweet['text']),
-                                      'Length': len(raw_tweet['text']), 'Language': raw_tweet['lang'],
-                                      'Likes': raw_tweet['favorite_count'],
-                                      'Retweets': raw_tweet['retweet_count'],
-                                      'Mentioned_Screen_Name': mentioned_screen_name_list,
-                                      'In_Reply_to_Screen_Name': raw_tweet['in_reply_to_screen_name'],
-                                      'In_Reply_to_Status_id': raw_tweet['in_reply_to_status_id_str'],
-                                      'Hashtags': hastags, 'Location': raw_tweet['user']['location'],
-                                      'Coordinates': raw_tweet['coordinates'], 'Source': raw_tweet['source']})
+                    hashtags.extend([item['text'] for item in raw_tweet['retweeted_status']['entities']['hashtags']])
+
+                hashtags = list(set(hashtags))
+                required_data.append({'ID':raw_tweet['id_str'], 'Screen_Name':raw_tweet['user']['screen_name'],
+                            'Date':self.timezone_convert_streaming(raw_tweet['created_at']),
+                            'Tweets':content, 'Content_Sentiment':content_sentiment,
+                            'Length':len(raw_tweet['text']),'Language':raw_tweet['lang'],
+                            'Likes':raw_tweet['favorite_count'],
+                            'Retweets':raw_tweet['retweet_count'],
+                            'Mentioned_Screen_Name':mentioned_screen_name_list,
+                            'In_Reply_to_Screen_Name':raw_tweet['in_reply_to_screen_name'],
+                            'In_Reply_to_Status_id':raw_tweet['in_reply_to_status_id_str'],
+                            'Hashtags':hashtags,'Location':raw_tweet['user']['location'],
+                            'Coordinates':raw_tweet['coordinates'],'Source':raw_tweet['source']})
         return required_data
 
     def tweets_to_dataframe(self, raw_tweets):

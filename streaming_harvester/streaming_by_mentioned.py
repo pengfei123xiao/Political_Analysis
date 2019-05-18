@@ -154,7 +154,7 @@ if __name__ == '__main__':
     print(politician_screen_name_list)
     db_address = 'mongodb://admin:123@115.146.85.107/'
     database = 'capstone'
-    collection = 'streamingMentionedTest'
+    collection = 'streamingMentionedCorrectDate'
     twitter_streamer.stream_tweets(db_address, database, collection, politician_screen_name_list)
 
     gc.collect()

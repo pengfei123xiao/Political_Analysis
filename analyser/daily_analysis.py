@@ -31,8 +31,8 @@ if __name__ == '__main__':
     # create daily timestamp
     start_date_str = (datetime.date.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     end_date_str = datetime.date.today().strftime('%Y-%m-%d')
-    date_list = pd.date_range(start=start_date_str, end=end_date_str, freq='D')
-    # date_list = pd.date_range(start='2019-04-13', end='2019-05-17', freq='D')
+    # date_list = pd.date_range(start=start_date_str, end=end_date_str, freq='D')
+    date_list = pd.date_range(start='2019-04-13', end='2019-04-21', freq='D')
 
     for i in range(len(date_list) - 1):
         start = date_list[i]
@@ -63,7 +63,9 @@ if __name__ == '__main__':
         result_dict['data'] = {'Top_Tags_of_Politicians': pol_top_tags,
                                'Top_Tags_of_Users': user_top_tags,
                                'dailyPolitician': extend_politician_df.to_dict('records')}
-        f_tools.save_data(result_dict, 'test', 'dailyHead', 'insert_one')
+
+        # f_tools.save_data(result_dict, 'test', 'dailyHead', 'insert_one')
+        f_tools.save_data(result_dict, 'test', 'dailyTest', 'insert_one')
 
         del pol_tweets_mongo, pol_tweets_df, user_tweets_mongo, user_tweets_df, totalMention_from_mongo, totalMention_df
         del extend_politician_df

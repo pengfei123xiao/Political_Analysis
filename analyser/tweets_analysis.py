@@ -63,12 +63,12 @@ class TweetsAnalysis():
         for index, s_list in self.mentioned_df['Mentioned_Screen_Name'].iteritems():
             if screen_name in s_list:
                 mentioned_count += 1
-                if self.mentioned_df['Content_Sentiment'].iloc[index] == 1:
-                    pos += 1
-                elif self.mentioned_df['Content_Sentiment'].iloc[index] == 0:
-                    neu += 1
-                else:
-                    neg += 1
+                # if self.mentioned_df['Content_Sentiment'].iloc[index] == 1:
+                #     pos += 1
+                # elif self.mentioned_df['Content_Sentiment'].iloc[index] == 0:
+                #     neu += 1
+                # else:
+                #     neg += 1
                 user_screen_name = self.mentioned_df['Screen_Name'].iloc[index]
                 if user_screen_name in mentioned_user_dic:
                     mentioned_user_dic[user_screen_name][self.mentioned_df['Content_Sentiment'].iloc[index] + 1] += 1
@@ -84,7 +84,7 @@ class TweetsAnalysis():
             else:
                 neg1 += 1
         mentioned_count = mentioned_count - reply_count
-        return [mentioned_count, pos1, neu1, neg1, pos, neu, neg]
+        return [mentioned_count, pos1, neu1, neg1]  # , pos, neu, neg]
 
     def word_frequency(self, name, column):
         """
@@ -129,10 +129,21 @@ class TweetsAnalysis():
         self.politician_df['Likes_Count'] = self.politician_df['Screen_Name'].apply(
             lambda x: self.pol_tweets_df.groupby(by='Screen_Name')['Likes'].sum()[x] if x in self.pol_tweets_df[
                 'Screen_Name'].tolist() else 0)
-        self.politician_df['Pol_Sentiment_Sum'] = self.politician_df['Screen_Name'].apply(
-            lambda x: self.pol_tweets_df.groupby(by='Screen_Name')['Content_Sentiment'].sum()[x] if x in
-                                                                                                    self.pol_tweets_df[
-                                                                                                        'Screen_Name'].tolist() else 0)
+        pos_pol_tweets_df = self.pol_tweets_df[self.pol_tweets_df['Content_Sentiment'] == 1]
+        neu_pol_tweets_df = self.pol_tweets_df[self.pol_tweets_df['Content_Sentiment'] == 0]
+        neg_pol_tweets_df = self.pol_tweets_df[self.pol_tweets_df['Content_Sentiment'] == -1]
+        self.politician_df['Pol_Sentiment_Pos'] = self.politician_df['Screen_Name'].apply(
+            lambda x: pos_pol_tweets_df.groupby(by='Screen_Name')['Content_Sentiment'].sum()[x] if x in
+                                                                                                   pos_pol_tweets_df[
+                                                                                                       'Screen_Name'].tolist() else 0)
+        self.politician_df['Pol_Sentiment_Neu'] = self.politician_df['Screen_Name'].apply(
+            lambda x: neu_pol_tweets_df.groupby(by='Screen_Name')['Content_Sentiment'].sum()[x] if x in
+                                                                                                   neu_pol_tweets_df[
+                                                                                                       'Screen_Name'].tolist() else 0)
+        self.politician_df['Pol_Sentiment_Neg'] = self.politician_df['Screen_Name'].apply(
+            lambda x: neg_pol_tweets_df.groupby(by='Screen_Name')['Content_Sentiment'].sum()[x] if x in
+                                                                                                   neg_pol_tweets_df[
+                                                                                                       'Screen_Name'].tolist() else 0)
 
         """statistical count from reply tweets"""
         self.politician_df['Statistical_Count'] = self.politician_df['Screen_Name'].apply(
@@ -147,9 +158,9 @@ class TweetsAnalysis():
         self.politician_df['Sentiment_Pos'] = self.politician_df['Statistical_Count'].apply(lambda x: x[1])
         self.politician_df['Sentiment_Neu'] = self.politician_df['Statistical_Count'].apply(lambda x: x[2])
         self.politician_df['Sentiment_Neg'] = self.politician_df['Statistical_Count'].apply(lambda x: x[3])
-        self.politician_df['Sentiment_Pos_raw'] = self.politician_df['Statistical_Count'].apply(lambda x: x[4])
-        self.politician_df['Sentiment_Neu_raw'] = self.politician_df['Statistical_Count'].apply(lambda x: x[5])
-        self.politician_df['Sentiment_Neg_raw'] = self.politician_df['Statistical_Count'].apply(lambda x: x[6])
+        # self.politician_df['Sentiment_Pos_raw'] = self.politician_df['Statistical_Count'].apply(lambda x: x[4])
+        # self.politician_df['Sentiment_Neu_raw'] = self.politician_df['Statistical_Count'].apply(lambda x: x[5])
+        # self.politician_df['Sentiment_Neg_raw'] = self.politician_df['Statistical_Count'].apply(lambda x: x[6])
         self.politician_df.drop(columns=['Statistical_Count'], inplace=True)
 
         """word cloud"""

@@ -15,7 +15,7 @@ import re
 import gc
 import json
 from datetime import datetime
-
+from collections import Counter
 gc.enable()
 
 
@@ -237,7 +237,8 @@ class FunctionalTools():
         :return: null
         """
         try:
-            client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
+            client = MongoClient("mongodb://admin:123@203.101.225.125/")  # carol
+            # client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
             # client = MongoClient("mongodb://admin:123@103.6.254.48/")  # DB
             db = client[db_name]
             collection = db[collection_name]
@@ -253,7 +254,7 @@ class FunctionalTools():
         except Exception as e:
             print(e)
 
-    def find_data(self, db_name, collection_name):
+    def find_data(self, db_name, collection_name, db_address = "115.146.85.107/"):
         """
         The function is used to show all the data stored in MongoDB.
         :param db_name: str
@@ -265,13 +266,16 @@ class FunctionalTools():
             A list of results.
         """
         # client = MongoClient('mongodb+srv://chen:123@nlptest-r26bl.gcp.mongodb.net/test?retryWrites=true')
-        client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
+        # client = MongoClient("mongodb://admin:123@" + db_address)  # carol
+        client = MongoClient("mongodb://admin:123@" + db_address)
+        # 203.101.225.125/")  # carol
+        # client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
         # client = MongoClient("mongodb://admin:123@103.6.254.48/")  # DB
         db = client[db_name]
         collection = db[collection_name]
         return collection.find()
 
-    def find_mongo_by_date(self, db_name, collection_name, start, end):
+    def find_mongo_by_date(self, db_name, collection_name, start, end, db_address = "103.6.254.48/"):
         """
         The function is used to show all the data stored in MongoDB.
         :param db_name: str
@@ -287,7 +291,10 @@ class FunctionalTools():
             A list of results.
         """
         # client = MongoClient('mongodb+srv://chen:123@nlptest-r26bl.gcp.mongodb.net/test?retryWrites=true')
-        client = MongoClient("mongodb://admin:123@115.146.85.107/")
+
+        client = MongoClient("mongodb://admin:123@" + db_address)  # carol
+        # client = MongoClient("mongodb://admin:123@203.101.225.125/")  # carol
+        # client = MongoClient("mongodb://admin:123@115.146.85.107/")
         db = client[db_name]
         collection = db[collection_name]
         # return collection.find({'Date': {'$lt': end}})
@@ -299,3 +306,23 @@ class FunctionalTools():
         db = client[db_name]
         collection = db[collection_name]
         collection.drop()
+
+    def count_popular_hashtag(self, tweets_df):
+        """
+        Calculate top six hashtags.
+        :param tweets_df:
+        :return:
+        """
+        #  tweet_with_tag_df = self.tweets_df[self.tweets_df['Hashtags'].astype(str) != '[]'].copy()
+        tweet_with_tag_df = tweets_df[tweets_df['Hashtags'].astype(str) != '[]'].copy()
+        tag_list = []
+        for _, v in tweet_with_tag_df['Hashtags'].iteritems():
+            tag_list.extend(v)
+        tag_arr = np.empty([len(tag_list)], dtype=object)
+        flag = 0
+        for item in tag_list:
+            tag_arr[flag] = item.lower()
+            flag += 1
+        tag_count = Counter(tag_arr)
+        top_tags = tag_count.most_common(6)
+        return top_tags

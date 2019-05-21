@@ -13,7 +13,6 @@ sys.path.append('..')
 from analyser import functional_tools
 from multiprocessing import Process
 import threading
-import datetime
 import time
 import gc
 
@@ -50,9 +49,10 @@ class TwitterAuthenticator():
 
 
 # class RestfulCrawler(Process):
+# class RestfulPolTweets(threading.Thread):
 class RestfulPolTweets(threading.Thread):
-
-    def __init__(self, screen_name, db_name, collection_name, state_name, electorate_name, party_name):
+    def __init__(self, screen_name, db_name, collection_name, state_name, electorate_name,
+        party_name, start_date):
         """
         :param twitter_user:
         """
@@ -66,12 +66,12 @@ class RestfulPolTweets(threading.Thread):
         self.electorate_name = electorate_name
         self.party_name = party_name
         self.state_name = state_name
+        self.start_date = start_date
 
     def run(self):
         max_id = None
         TWEETS_PER_QUERY = 60
         records_count = 0
-        start_date = datetime.datetime.today() - datetime.timedelta(days=1)
         f_tools = functional_tools.FunctionalTools()
 
         while True:
@@ -90,7 +90,7 @@ class RestfulPolTweets(threading.Thread):
                 if df.shape[0] != 0:
                     records_count += df.shape[0]
                     f_tools.save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
-                if raw_tweets[-1].created_at < start_date:
+                if raw_tweets[-1].created_at < self.start_date:
                     print('Date boundary reached.')
                     print('In total {} tweets are stored in DB.'.format(records_count))
                     print('-----')
@@ -122,4 +122,4 @@ if __name__ == "__main__":
                                            party_list[i])
         print("Crawling tweets of {}.".format(politician_list[i]))
         restful_crawler.start()
-        restful_crawler.join()
+        # restful_crawler.join()

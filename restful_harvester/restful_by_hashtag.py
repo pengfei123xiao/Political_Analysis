@@ -65,7 +65,7 @@ class RestfulHashtags(threading.Thread):
 
     """
 
-    def __init__(self, hashtag, db_name, collection_name):
+    def __init__(self, hashtags, db_name, collection_name):
         """
         :param twitter_user:
         """
@@ -73,7 +73,7 @@ class RestfulHashtags(threading.Thread):
         threading.Thread.__init__(self)
         self.auth = TwitterAuthenticator().authenticate_twitter_app()
         self.twitter_api = API(self.auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True, timeout=200)
-        self.hashtag = hashtag
+        self.hashtags = hashtags
         self.db_name = db_name
         self.collection_name = collection_name
 
@@ -86,7 +86,8 @@ class RestfulHashtags(threading.Thread):
 
         while True:
             try:
-                raw_tweets = self.twitter_api.search(q='#' + self.hashtag,  # result_type='mixed',
+                query = ' OR '.join(self.hashtags)
+                raw_tweets = self.twitter_api.search(q=query,  # result_type='mixed',
                                                      tweet_mode='extended', max_id=max_id, count=NUM_PER_QUERY)
                 if len(raw_tweets) == 0:
                     print("No more hashtag tweets found.")
@@ -105,7 +106,7 @@ class RestfulHashtags(threading.Thread):
                     print('In total {} tweets are stored in DB.'.format(records_count))
                     print('-----')
                     break
-
+                # break  # test only
             except TweepError as e:
                 print('Restful hashtag error:')
                 print(e)
@@ -116,57 +117,57 @@ class RestfulHashtags(threading.Thread):
                 break
 
 
-if __name__ == '__main__':
-    start_time = time.time()
-    # ===update politician tweets===
-    # temp_df = pd.read_csv('../data/full_politician_list.csv',
-    #                       usecols=['Name', 'State', 'Electorate', 'Party', 'Screen_Name'])
-    # politician_list = temp_df['Screen_Name'].dropna().tolist()
-    # state_list = temp_df['State'].dropna().tolist()
-    # ele_list = temp_df['Electorate'].dropna().tolist()
-    # party_list = temp_df['Party'].dropna().tolist()
-    # for i in range(len(politician_list)):
-    #     print('============================================')
-    #     print('Process: {}/{}'.format(i + 1, len(politician_list)))
-    #     restful_crawler = RestfulPolTweets(politician_list[i], 'capstone', 'restfulTweets', state_list[i], ele_list[i],
-    #                                        party_list[i])
-    #     print("Crawling tweets of {}.".format(politician_list[i]))
-    #     restful_crawler.start()
-    #     restful_crawler.join()
-
-    #  ===update politician tweets===
-    top_tag_df = pd.read_csv('../data/daily_top_tags.csv')
-    hashtag_list = []
-    for i, v in top_tag_df['Top_Tags_of_Politicians'].iteritems():
-        for item in literal_eval(v):
-            hashtag_list.append(item[0])
-    hashtag_set = set(hashtag_list)
-    count = 1
-    hash_list1 = ['peoplesforum',
-                  'widebayvotes',
-                  'buildingoureconomy',
-                  'climatechange',
-                  'laborwide',
-                  'leadersdebate',
-                  'vote1yates',
-                  'wentworthvotes',
-                  'cowper',
-                  'warringahdebate',
-                  'abbottvsteggall',
-                  'mymum',
-                  'laborlaunch',
-                  'greens',
-                  'mothersday',
-                  'ausvotes',
-                  'kooyongvotes',
-                  'qanda']
-    for hashtag in hash_list1:  # hashtag_set:  # hashtag_set:  # ['puthatelast']:
-        print('============================================')
-        print('Process: {}/{}'.format(count, len(hash_list1)))
-        restful_hashtag = RestfulHashtags(hashtag, 'capstone', 'restfulByHashtag')
-        # restful_hashtag = RestfulHashtags(hashtag, 'test', 'test99')
-        print("Crawling tweets by {}.".format(hashtag))
-        restful_hashtag.start()
-        restful_hashtag.join()
-        count += 1
-    print('Finished. Time used: %f mins' % ((time.time() - start_time) / 60))
+# if __name__ == '__main__':
+#     start_time = time.time()
+#     # ===update politician tweets===
+#     # temp_df = pd.read_csv('../data/full_politician_list.csv',
+#     #                       usecols=['Name', 'State', 'Electorate', 'Party', 'Screen_Name'])
+#     # politician_list = temp_df['Screen_Name'].dropna().tolist()
+#     # state_list = temp_df['State'].dropna().tolist()
+#     # ele_list = temp_df['Electorate'].dropna().tolist()
+#     # party_list = temp_df['Party'].dropna().tolist()
+#     # for i in range(len(politician_list)):
+#     #     print('============================================')
+#     #     print('Process: {}/{}'.format(i + 1, len(politician_list)))
+#     #     restful_crawler = RestfulPolTweets(politician_list[i], 'capstone', 'restfulTweets', state_list[i], ele_list[i],
+#     #                                        party_list[i])
+#     #     print("Crawling tweets of {}.".format(politician_list[i]))
+#     #     restful_crawler.start()
+#     #     restful_crawler.join()
+#
+#     #  ===update politician tweets===
+#     top_tag_df = pd.read_csv('../data/daily_top_tags.csv')
+#     hashtag_list = []
+#     for i, v in top_tag_df['Top_Tags_of_Politicians'].iteritems():
+#         for item in literal_eval(v):
+#             hashtag_list.append(item[0])
+#     hashtag_set = set(hashtag_list)
+#     count = 1
+#     hash_list1 = ['peoplesforum',
+#                   'widebayvotes',
+#                   'buildingoureconomy',
+#                   'climatechange',
+#                   'laborwide',
+#                   'leadersdebate',
+#                   'vote1yates',
+#                   'wentworthvotes',
+#                   'cowper',
+#                   'warringahdebate',
+#                   'abbottvsteggall',
+#                   'mymum',
+#                   'laborlaunch',
+#                   'greens',
+#                   'mothersday',
+#                   'ausvotes',
+#                   'kooyongvotes',
+#                   'qanda']
+#     for hashtag in hash_list1:  # hashtag_set:  # hashtag_set:  # ['puthatelast']:
+#         print('============================================')
+#         print('Process: {}/{}'.format(count, len(hash_list1)))
+#         restful_hashtag = RestfulHashtags(hashtag, 'capstone', 'restfulByHashtag')
+#         # restful_hashtag = RestfulHashtags(hashtag, 'test', 'test99')
+#         print("Crawling tweets by {}.".format(hashtag))
+#         restful_hashtag.start()
+#         restful_hashtag.join()
+#         count += 1
+#     print('Finished. Time used: %f mins' % ((time.time() - start_time) / 60))

@@ -8,7 +8,7 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime
-from collections import Counter
+
 import nltk
 from nltk.corpus import stopwords
 # nltk.download('stopwords')
@@ -167,23 +167,3 @@ class TweetsAnalysis():
         self.politician_df['Word_Cloud'] = self.politician_df['Screen_Name'].apply(
             lambda x: self.word_frequency(x, 'Screen_Name'))
         return self.politician_df
-
-    def count_popular_hashtag(self, tweets_df):
-        """
-        Calculate top six hashtags.
-        :param tweets_df:
-        :return:
-        """
-        #  tweet_with_tag_df = self.tweets_df[self.tweets_df['Hashtags'].astype(str) != '[]'].copy()
-        tweet_with_tag_df = tweets_df[tweets_df['Hashtags'].astype(str) != '[]'].copy()
-        tag_list = []
-        for _, v in tweet_with_tag_df['Hashtags'].iteritems():
-            tag_list.extend(v)
-        tag_arr = np.empty([len(tag_list)], dtype=object)
-        flag = 0
-        for item in tag_list:
-            tag_arr[flag] = item.lower()
-            flag += 1
-        tag_count = Counter(tag_arr)
-        top_tags = tag_count.most_common(6)
-        return top_tags

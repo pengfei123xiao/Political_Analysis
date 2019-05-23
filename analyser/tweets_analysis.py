@@ -131,9 +131,27 @@ class TweetsAnalysis():
         self.politician_df['Sentiment_Pos'] = self.politician_df['Statistical_Count'].apply(lambda x: x[1])
         self.politician_df['Sentiment_Neu'] = self.politician_df['Statistical_Count'].apply(lambda x: x[2])
         self.politician_df['Sentiment_Neg'] = self.politician_df['Statistical_Count'].apply(lambda x: x[3])
-        # self.politician_df['Sentiment_Pos_raw'] = self.politician_df['Statistical_Count'].apply(lambda x: x[4])
-        # self.politician_df['Sentiment_Neu_raw'] = self.politician_df['Statistical_Count'].apply(lambda x: x[5])
-        # self.politician_df['Sentiment_Neg_raw'] = self.politician_df['Statistical_Count'].apply(lambda x: x[6])
+
+        # ===state sentiment distribution===
+        pos_mention_df = self.mentioned_df[self.mentioned_df['Content_Sentiment'] == 1]
+        neu_mention_df = self.mentioned_df[self.mentioned_df['Content_Sentiment'] == 0]
+        neg_mention_df = self.mentioned_df[self.mentioned_df['Content_Sentiment'] == -1]
+        self.politician_df['State_Pos'] = \
+            self.politician_df['Screen_Name'].apply(lambda x: [(pos_mention_df[
+                                                                    pos_mention_df['Mentioned_Screen_Name'].astype(
+                                                                        str).str.contains(x, na=False)].groupby(
+                by='State')['ID'].count()).to_dict()])
+        self.politician_df['State_Neu'] = \
+            self.politician_df['Screen_Name'].apply(lambda x: [(neu_mention_df[
+                                                                    neu_mention_df['Mentioned_Screen_Name'].astype(
+                                                                        str).str.contains(x, na=False)].groupby(
+                by='State')['ID'].count()).to_dict()])
+        self.politician_df['State_Neg'] = \
+            self.politician_df['Screen_Name'].apply(lambda x: [(neg_mention_df[
+                                                                    neg_mention_df['Mentioned_Screen_Name'].astype(
+                                                                        str).str.contains(x, na=False)].groupby(
+                by='State')['ID'].count()).to_dict()])
+
         self.politician_df.drop(columns=['Statistical_Count'], inplace=True)
 
         """word cloud"""

@@ -31,7 +31,7 @@ if __name__ == '__main__':
         start_date = datetime(2019, 4, 13, 14, 0, 0)
         # end_date = datetime(2019, 4, 26)
         # start_date = datetime.combine(date.today() - timedelta(days=2), dtime(14, 0))
-        end_date = datetime(2019, 4, 30, 14, 0, 0)
+        end_date = datetime(2019, 4, 15, 14, 0, 0)
         # end_date = datetime.combine(date.today()- timedelta(days=30), dtime(14, 0))
         # end_date = datetime.combine(date.today()- timedelta(days=1), dtime(14, 0))
         logger.info('============================================')

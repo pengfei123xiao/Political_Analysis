@@ -49,14 +49,15 @@ class CumulativeAnalysis(threading.Thread):
                       'Northern Territory', 'Australian Capital Territory', 'Other Territories', 'Tasmania']
         for i in range((self.end_date - self.start_date).days):
             result_dict = {}
-            start = self.start_date + timedelta(days=i)
+            # start = self.start_date + timedelta(days=i)
             end = self.start_date + timedelta(days=i + 1)
             new_mention_df = mentionState_df[mentionState_df['Date'] < end]
             # new_mention_df = self.totalMention_df[self.totalMention_df['Date'] < end]
-
+            print(new_mention_df.shape)
             new_pol_tweets_df = pol_tweets_df[pol_tweets_df['Date'] < end]
 
             cumulative_analysis = tweets_analysis.TweetsAnalysis(self.politician_df, new_mention_df, new_pol_tweets_df)
+            print(new_mention_df.shape)
             extend_politician_df = cumulative_analysis.features_concat()
             for _, v in extend_politician_df.iterrows():
                 for state in state_list:
@@ -66,7 +67,8 @@ class CumulativeAnalysis(threading.Thread):
                         v['State_Neu'][0][state] = 0
                     if state not in v['State_Neg'][0]:
                         v['State_Neg'][0][state] = 0
-            print('{} features concat finished. Time used: {} mins'.format(datetime.strftime(start, '%b-%d-%Y'),
+
+            print('{} features concat finished. Time used: {} mins'.format(datetime.strftime(end, '%b-%d-%Y'),
                                                                            (time.time() - start_time) / 60))
             del new_pol_tweets_df, new_mention_df
             gc.collect()

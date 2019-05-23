@@ -38,7 +38,11 @@ class TweetsAnalysis():
         mentioned_count, reply_count, sen_sum = 0, 0, 0
         head_pos, head_neu, head_neg = 0, 0, 0
         mentioned_user_dic = {}
+        # print(self.mentioned_df.shape)
+        self.mentioned_df.reset_index(drop=True, inplace = True)
         for index, s_list in self.mentioned_df['Mentioned_Screen_Name'].iteritems():
+            # print(index)
+            # print(s_list)
             if screen_name in s_list:
                 mentioned_count += 1
                 user_screen_name = self.mentioned_df['Screen_Name'].iloc[index]

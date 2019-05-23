@@ -5,18 +5,14 @@
 # @FileName: restful_by_hashtag.py
 # @Software: PyCharm
 
-import pandas as pd
-from tweepy import OAuthHandler, AppAuthHandler, TweepError, API
 import sys
 
+from tweepy import AppAuthHandler, TweepError, API
+
 sys.path.append('..')
-from restful_harvester.restful_pol_tweets import RestfulPolTweets
 from analyser import functional_tools
-from ast import literal_eval  # Convert list-like string to list
-from multiprocessing import Process
 import datetime
 import threading
-import time
 import gc
 
 gc.enable()
@@ -65,7 +61,7 @@ class RestfulHashtags(threading.Thread):
 
     """
 
-    def __init__(self, hashtags, db_name, collection_name):
+    def __init__(self, start_date, hashtags, db_name, collection_name):
         """
         :param twitter_user:
         """
@@ -76,12 +72,13 @@ class RestfulHashtags(threading.Thread):
         self.hashtags = hashtags
         self.db_name = db_name
         self.collection_name = collection_name
+        self.start_date = start_date
 
     def run(self):
         max_id = None
         NUM_PER_QUERY = 100
         records_count = 0
-        start_date = datetime.datetime.today() - datetime.timedelta(days=1)
+        # start_date = datetime.datetime.today() - datetime.timedelta(days=1)
         f_tools = functional_tools.FunctionalTools()
 
         while True:
@@ -101,7 +98,7 @@ class RestfulHashtags(threading.Thread):
                 if df.shape[0] != 0:
                     f_tools.save_data(df.to_dict('records'), self.db_name, self.collection_name, 'update')
                     records_count += df.shape[0]
-                if raw_tweets[-1].created_at < start_date:
+                if raw_tweets[-1].created_at < self.start_date:
                     print('Date boundary reached.')
                     print('In total {} tweets are stored in DB.'.format(records_count))
                     print('-----')
@@ -115,7 +112,6 @@ class RestfulHashtags(threading.Thread):
             except Exception as e2:
                 print(e2)
                 break
-
 
 # if __name__ == '__main__':
 #     start_time = time.time()

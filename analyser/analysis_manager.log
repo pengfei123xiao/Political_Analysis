@@ -1,0 +1,109 @@
+2019-05-21 21:04:28,774 - __main__ - INFO - ============================================
+2019-05-21 21:04:28,774 - __main__ - INFO - Start date: 2019-05-20; end date: 2019-05-21.
+2019-05-21 21:04:28,809 - __main__ - INFO - ============================================
+2019-05-21 21:04:28,809 - __main__ - INFO - Harvest 280 politician's info starts.
+2019-05-21 21:04:30,183 - __main__ - INFO - ============================================
+2019-05-21 21:04:30,183 - __main__ - INFO - Harvest 280 politician's tweets starts.
+2019-05-21 21:05:00,551 - __main__ - INFO - Harvest politician's info finishes. 0.5290025353431702 mins used 
+2019-05-21 21:05:30,732 - __main__ - INFO - Harvest politician's tweets finishes. 1.0091360012690227 mins used.
+2019-05-21 21:05:30,863 - __main__ - INFO - Politician's tweets read time: 0:00:00.131037
+2019-05-21 22:00:19,088 - __main__ - INFO - ============================================
+2019-05-21 22:00:19,088 - __main__ - INFO - Start date: 2019-05-20; end date: 2019-05-21.
+2019-05-21 22:00:19,105 - __main__ - INFO - ============================================
+2019-05-21 22:00:19,106 - __main__ - INFO - Harvest 280 politician's info starts.
+2019-05-23 12:02:32,593 - __main__ - INFO - ============================================
+2019-05-23 12:02:32,594 - __main__ - INFO - Start date: 2019-04-13; end date: 2019-05-03.
+2019-05-23 12:02:32,629 - __main__ - INFO - ============================================
+2019-05-23 12:02:32,629 - __main__ - INFO - Harvest 280 politician's info starts.
+2019-05-23 12:02:34,241 - __main__ - INFO - ============================================
+2019-05-23 12:02:34,242 - __main__ - INFO - Harvest 280 politician's tweets starts.
+2019-05-23 12:02:34,841 - __main__ - INFO - Harvest politician's info finishes. 0.03686115344365438 mins used 
+2019-05-23 12:02:35,882 - __main__ - INFO - Harvest politician's tweets finishes. 0.027324068546295165 mins used.
+2019-05-23 12:02:38,311 - __main__ - INFO - Politician's tweets read time: 0:00:02.429111
+2019-05-23 12:02:38,311 - __main__ - INFO - ============================================
+2019-05-23 12:02:38,311 - __main__ - INFO - Read mentioned tweets starts
+2019-05-23 12:04:20,377 - __main__ - INFO - 1074940 mentioned tweets loaded. Time used: 1.7010766824086507 mins
+2019-05-23 12:22:46,272 - __main__ - INFO - ============================================
+2019-05-23 12:22:46,272 - __main__ - INFO - Start date: 2019-04-13; end date: 2019-04-23.
+2019-05-23 12:22:46,289 - __main__ - INFO - ============================================
+2019-05-23 12:22:46,289 - __main__ - INFO - Harvest 280 politician's info starts.
+2019-05-23 12:22:46,869 - __main__ - INFO - ============================================
+2019-05-23 12:22:46,869 - __main__ - INFO - Harvest 280 politician's tweets starts.
+2019-05-23 12:22:47,448 - __main__ - INFO - Harvest politician's info finishes. 0.019307295481363933 mins used 
+2019-05-23 12:22:48,812 - __main__ - INFO - Harvest politician's tweets finishes. 0.03238181670506795 mins used.
+2019-05-23 12:22:50,468 - __main__ - INFO - Politician's tweets read time: 0:00:01.656009
+2019-05-23 12:22:50,468 - __main__ - INFO - ============================================
+2019-05-23 12:22:50,468 - __main__ - INFO - Read mentioned tweets starts
+2019-05-23 12:23:32,586 - __main__ - INFO - 484301 mentioned tweets loaded. Time used: 0.7019497513771057 mins
+2019-05-23 12:29:39,417 - __main__ - INFO - ============================================
+2019-05-23 12:29:39,418 - __main__ - INFO - Start date: 2019-04-13; end date: 2019-04-23.
+2019-05-23 12:29:39,439 - __main__ - INFO - ============================================
+2019-05-23 12:29:39,439 - __main__ - INFO - Harvest 280 politician's info starts.
+2019-05-23 12:29:40,052 - __main__ - INFO - ============================================
+2019-05-23 12:29:40,052 - __main__ - INFO - Harvest 280 politician's tweets starts.
+2019-05-23 12:29:40,659 - __main__ - INFO - Harvest politician's info finishes. 0.020340466499328615 mins used 
+2019-05-23 12:29:41,372 - __main__ - INFO - Harvest politician's tweets finishes. 0.02199286619822184 mins used.
+2019-05-23 12:29:42,459 - __main__ - INFO - Politician's tweets read time: 0:00:01.087039
+2019-05-23 12:29:42,459 - __main__ - INFO - ============================================
+2019-05-23 12:29:42,459 - __main__ - INFO - Read mentioned tweets starts
+2019-05-23 12:30:27,136 - __main__ - INFO - 484301 mentioned tweets loaded. Time used: 0.7446041862169902 mins
+2019-05-23 12:31:17,311 - __main__ - INFO - ============================================
+2019-05-23 12:31:17,311 - __main__ - INFO - Start date: 2019-04-13; end date: 2019-04-23.
+2019-05-23 12:31:17,328 - __main__ - INFO - ============================================
+2019-05-23 12:31:17,328 - __main__ - INFO - Harvest 280 politician's info starts.
+2019-05-23 12:31:17,914 - __main__ - INFO - ============================================
+2019-05-23 12:31:17,914 - __main__ - INFO - Harvest 280 politician's tweets starts.
+2019-05-23 12:31:18,505 - __main__ - INFO - Harvest politician's info finishes. 0.019610500335693358 mins used 
+2019-05-23 12:31:19,405 - __main__ - INFO - Harvest politician's tweets finishes. 0.024846132596333823 mins used.
+2019-05-23 12:31:20,540 - __main__ - INFO - Politician's tweets read time: 0:00:01.134567
+2019-05-23 12:31:20,540 - __main__ - INFO - ============================================
+2019-05-23 12:31:20,541 - __main__ - INFO - Read mentioned tweets starts
+2019-05-23 12:31:59,079 - __main__ - INFO - 484301 mentioned tweets loaded. Time used: 0.642313281695048 mins
+2019-05-23 12:35:24,395 - __main__ - INFO - ============================================
+2019-05-23 12:35:24,395 - __main__ - INFO - Start date: 2019-04-13; end date: 2019-04-23.
+2019-05-23 12:35:24,414 - __main__ - INFO - ============================================
+2019-05-23 12:35:24,414 - __main__ - INFO - Harvest 280 politician's info starts.
+2019-05-23 12:35:24,974 - __main__ - INFO - ============================================
+2019-05-23 12:35:24,974 - __main__ - INFO - Harvest 280 politician's tweets starts.
+2019-05-23 12:35:25,557 - __main__ - INFO - Harvest politician's info finishes. 0.019047415256500243 mins used 
+2019-05-23 12:35:26,728 - __main__ - INFO - Harvest politician's tweets finishes. 0.02922358512878418 mins used.
+2019-05-23 12:35:27,839 - __main__ - INFO - Politician's tweets read time: 0:00:01.110976
+2019-05-23 12:35:27,840 - __main__ - INFO - ============================================
+2019-05-23 12:35:27,840 - __main__ - INFO - Read mentioned tweets starts
+2019-05-23 12:36:05,533 - __main__ - INFO - 484301 mentioned tweets loaded. Time used: 0.6282196482022603 mins
+2019-05-23 12:37:33,914 - __main__ - INFO - ============================================
+2019-05-23 12:37:33,914 - __main__ - INFO - Start date: 2019-04-13; end date: 2019-04-23.
+2019-05-23 12:37:33,933 - __main__ - INFO - ============================================
+2019-05-23 12:37:33,933 - __main__ - INFO - Harvest 280 politician's info starts.
+2019-05-23 12:37:35,411 - __main__ - INFO - ============================================
+2019-05-23 12:37:35,412 - __main__ - INFO - Harvest 280 politician's tweets starts.
+2019-05-23 12:37:36,286 - __main__ - INFO - Harvest politician's info finishes. 0.039206031958262125 mins used 
+2019-05-23 12:37:37,574 - __main__ - INFO - Harvest politician's tweets finishes. 0.03602979977925618 mins used.
+2019-05-23 12:37:38,988 - __main__ - INFO - Politician's tweets read time: 0:00:01.414156
+2019-05-23 12:37:38,988 - __main__ - INFO - ============================================
+2019-05-23 12:37:38,988 - __main__ - INFO - Read mentioned tweets starts
+2019-05-23 12:38:15,704 - __main__ - INFO - 484301 mentioned tweets loaded. Time used: 0.6119202812512715 mins
+2019-05-23 12:38:45,617 - __main__ - INFO - ============================================
+2019-05-23 12:38:45,617 - __main__ - INFO - Start date: 2019-04-13; end date: 2019-04-23.
+2019-05-23 12:38:45,634 - __main__ - INFO - ============================================
+2019-05-23 12:38:45,634 - __main__ - INFO - Harvest 280 politician's info starts.
+2019-05-23 12:38:46,213 - __main__ - INFO - ============================================
+2019-05-23 12:38:46,215 - __main__ - INFO - Harvest 280 politician's tweets starts.
+2019-05-23 12:38:46,900 - __main__ - INFO - Harvest politician's info finishes. 0.02110193173090617 mins used 
+2019-05-23 12:38:48,820 - __main__ - INFO - Harvest politician's tweets finishes. 0.04338413079579671 mins used.
+2019-05-23 12:38:50,936 - __main__ - INFO - Politician's tweets read time: 0:00:02.115686
+2019-05-23 12:38:50,936 - __main__ - INFO - ============================================
+2019-05-23 12:38:50,936 - __main__ - INFO - Read mentioned tweets starts
+2019-05-23 12:39:24,029 - __main__ - INFO - 484301 mentioned tweets loaded. Time used: 0.551539134979248 mins
+2019-05-23 12:59:12,171 - __main__ - INFO - ============================================
+2019-05-23 12:59:12,172 - __main__ - INFO - Start date: 2019-04-13; end date: 2019-05-03.
+2019-05-23 12:59:12,203 - __main__ - INFO - ============================================
+2019-05-23 12:59:12,203 - __main__ - INFO - Harvest 280 politician's info starts.
+2019-05-23 12:59:12,823 - __main__ - INFO - ============================================
+2019-05-23 12:59:12,823 - __main__ - INFO - Harvest 280 politician's tweets starts.
+2019-05-23 12:59:13,475 - __main__ - INFO - Harvest politician's info finishes. 0.021196818351745604 mins used 
+2019-05-23 12:59:15,299 - __main__ - INFO - Harvest politician's tweets finishes. 0.04126818180084228 mins used.
+2019-05-23 12:59:19,772 - __main__ - INFO - Politician's tweets read time: 0:00:04.472003
+2019-05-23 12:59:19,772 - __main__ - INFO - ============================================
+2019-05-23 12:59:19,772 - __main__ - INFO - Read mentioned tweets starts
+2019-05-23 13:01:12,847 - __main__ - INFO - 1074940 mentioned tweets loaded. Time used: 1.884586016337077 mins

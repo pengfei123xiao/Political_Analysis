@@ -1,0 +1,73 @@
+2019-05-23 12:04:23,301 - attach_state - INFO - Thread to calculate states starts.
+2019-05-23 12:04:25,520 - attach_state - INFO - Thread to read locations ends.
+2019-05-23 12:04:25,521 - attach_state - INFO - (40517, 3)
+2019-05-23 12:04:25,547 - attach_state - INFO - 40517
+2019-05-23 12:04:25,586 - attach_state - INFO - drop na ends
+2019-05-23 12:23:34,800 - attach_state - INFO - Total 0 new locations to calcuate coordinate
+2019-05-23 12:23:35,143 - attach_state - INFO - Thread to calculate coordinates from location starts.
+2019-05-23 12:23:35,147 - attach_state - INFO - Thread to calculate coordinates from location ends.
+2019-05-23 12:23:35,505 - attach_state - INFO - Thread to calculate states starts.
+2019-05-23 12:23:37,480 - attach_state - INFO - Thread to read locations ends.
+2019-05-23 12:23:37,480 - attach_state - INFO - (40517, 3)
+2019-05-23 12:23:37,499 - attach_state - INFO - 40517
+2019-05-23 12:23:37,517 - attach_state - INFO - drop na ends
+2019-05-23 12:23:40,062 - attach_state - INFO - time of calculating state: 0:00:00.375676
+2019-05-23 12:23:43,563 - attach_state - INFO - final_mention_df: (484301, 18)
+2019-05-23 12:23:43,921 - attach_state - INFO - length of final_mention_df: 484301
+2019-05-23 12:30:29,318 - attach_state - INFO - Total 0 new locations to calcuate coordinate
+2019-05-23 12:30:29,704 - attach_state - INFO - Thread to calculate coordinates from location starts.
+2019-05-23 12:30:29,707 - attach_state - INFO - Thread to calculate coordinates from location ends.
+2019-05-23 12:30:30,453 - attach_state - INFO - Thread to calculate states starts.
+2019-05-23 12:30:32,612 - attach_state - INFO - Thread to read locations ends.
+2019-05-23 12:30:32,612 - attach_state - INFO - (40517, 3)
+2019-05-23 12:30:32,639 - attach_state - INFO - 40517
+2019-05-23 12:30:32,658 - attach_state - INFO - drop na ends
+2019-05-23 12:32:01,468 - attach_state - INFO - Total 0 new locations to calcuate coordinate
+2019-05-23 12:32:01,833 - attach_state - INFO - Thread to calculate coordinates from location starts.
+2019-05-23 12:32:01,837 - attach_state - INFO - Thread to calculate coordinates from location ends.
+2019-05-23 12:32:02,210 - attach_state - INFO - Thread to calculate states starts.
+2019-05-23 12:32:03,769 - attach_state - INFO - Thread to read locations ends.
+2019-05-23 12:32:03,769 - attach_state - INFO - (40517, 3)
+2019-05-23 12:32:03,787 - attach_state - INFO - 40517
+2019-05-23 12:32:03,805 - attach_state - INFO - drop na ends
+2019-05-23 12:36:07,739 - attach_state - INFO - Total 0 new locations to calcuate coordinate
+2019-05-23 12:36:08,109 - attach_state - INFO - Thread to calculate coordinates from location starts.
+2019-05-23 12:36:08,112 - attach_state - INFO - Thread to calculate coordinates from location ends.
+2019-05-23 12:36:08,517 - attach_state - INFO - Thread to calculate states starts.
+2019-05-23 12:36:09,972 - attach_state - INFO - Thread to read locations ends.
+2019-05-23 12:36:09,973 - attach_state - INFO - (40517, 3)
+2019-05-23 12:36:09,992 - attach_state - INFO - 40517
+2019-05-23 12:36:10,010 - attach_state - INFO - drop na ends
+2019-05-23 12:36:10,382 - attach_state - INFO - loc_result_df: (32104, 3)
+2019-05-23 12:38:20,456 - attach_state - INFO - Total 0 new locations to calcuate coordinate
+2019-05-23 12:38:20,902 - attach_state - INFO - Thread to calculate coordinates from location starts.
+2019-05-23 12:38:20,907 - attach_state - INFO - Thread to calculate coordinates from location ends.
+2019-05-23 12:38:21,611 - attach_state - INFO - Thread to calculate states starts.
+2019-05-23 12:38:23,263 - attach_state - INFO - Thread to read locations ends.
+2019-05-23 12:38:23,264 - attach_state - INFO - (40517, 3)
+2019-05-23 12:38:23,285 - attach_state - INFO - 40517
+2019-05-23 12:38:23,309 - attach_state - INFO - drop na ends
+2019-05-23 12:38:23,852 - attach_state - INFO - loc_result_df: (32104, 3)
+2019-05-23 12:38:26,030 - attach_state - INFO - mention_df: (484301, 17)
+2019-05-23 12:39:26,265 - attach_state - INFO - Total 0 new locations to calcuate coordinate
+2019-05-23 12:39:26,633 - attach_state - INFO - Thread to calculate coordinates from location starts.
+2019-05-23 12:39:26,638 - attach_state - INFO - Thread to calculate coordinates from location ends.
+2019-05-23 12:39:27,009 - attach_state - INFO - Thread to calculate states starts.
+2019-05-23 12:39:28,553 - attach_state - INFO - Thread to read locations ends.
+2019-05-23 12:39:28,553 - attach_state - INFO - (40517, 3)
+2019-05-23 12:39:28,574 - attach_state - INFO - 40517
+2019-05-23 12:39:28,592 - attach_state - INFO - drop na ends
+2019-05-23 12:39:28,949 - attach_state - INFO - loc_result_df: (32104, 3)
+2019-05-23 12:39:30,740 - attach_state - INFO - mention_df: (484301, 17)
+2019-05-23 12:39:30,740 - attach_state - INFO - new_mention_df: (312290, 18)
+2019-05-23 13:01:19,425 - attach_state - INFO - Total 0 new locations to calcuate coordinate
+2019-05-23 13:01:20,152 - attach_state - INFO - Thread to calculate coordinates from location starts.
+2019-05-23 13:01:20,157 - attach_state - INFO - Thread to calculate coordinates from location ends.
+2019-05-23 13:01:20,863 - attach_state - INFO - Thread to calculate states starts.
+2019-05-23 13:01:22,584 - attach_state - INFO - Thread to read locations ends.
+2019-05-23 13:01:22,584 - attach_state - INFO - (40517, 3)
+2019-05-23 13:01:22,607 - attach_state - INFO - 40517
+2019-05-23 13:01:22,626 - attach_state - INFO - drop na ends
+2019-05-23 13:01:23,369 - attach_state - INFO - loc_result_df: (32104, 3)
+2019-05-23 13:01:28,251 - attach_state - INFO - mention_df: (1074940, 17)
+2019-05-23 13:01:28,251 - attach_state - INFO - new_mention_df: (690490, 18)

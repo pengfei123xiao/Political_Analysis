@@ -5,15 +5,12 @@
 # @FileName: restful_pol_tweets.py
 # @Software: PyCharm
 
-from tweepy import OAuthHandler, AppAuthHandler, API, TweepError
-import pandas as pd
 import sys
-
+import pandas as pd
+from tweepy import AppAuthHandler, API, TweepError
 sys.path.append('..')
 from analyser import functional_tools
-from multiprocessing import Process
 import threading
-import time
 import gc
 
 gc.enable()
@@ -52,7 +49,7 @@ class TwitterAuthenticator():
 # class RestfulPolTweets(threading.Thread):
 class RestfulPolTweets(threading.Thread):
     def __init__(self, screen_name, db_name, collection_name, state_name, electorate_name,
-        party_name, start_date):
+                 party_name, start_date):
         """
         :param twitter_user:
         """
@@ -118,7 +115,7 @@ if __name__ == "__main__":
         print('============================================')
         print('Process: {}/{}'.format(i + 1, len(politician_list)))
         # restful_crawler = RestfulPolTweets(politician_list[i], 'test', 'test99', state_list[i], ele_list[i], party_list[i])
-        restful_crawler = RestfulPolTweets(politician_list[i], 'capstone', 'restfulTweets', state_list[i], ele_list[i],
+        restful_crawler = RestfulPolTweets(politician_list[i], 'backup', 'restfulTweets', state_list[i], ele_list[i],
                                            party_list[i])
         print("Crawling tweets of {}.".format(politician_list[i]))
         restful_crawler.start()

@@ -5,14 +5,10 @@
 # @FileName: tweets_analysis.py
 # @Software: PyCharm
 
-import pandas as pd
-import numpy as np
-from datetime import datetime
-
-import nltk
-from nltk.corpus import stopwords
 # nltk.download('stopwords')
 import sys
+import nltk
+from nltk.corpus import stopwords
 
 sys.path.append('..')
 # from analyser.functional_tools import FunctionalTools

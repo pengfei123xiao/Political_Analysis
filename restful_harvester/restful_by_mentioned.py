@@ -5,12 +5,11 @@
 # @FileName: restful_by_mentioned.py
 # @Software: PyCharm
 
-from tweepy import OAuthHandler, AppAuthHandler, API, TweepError
-import pandas as pd
 import sys
+import pandas as pd
+from tweepy import AppAuthHandler, API, TweepError
 sys.path.append('..')
 from analyser import functional_tools
-from multiprocessing import Process
 import threading
 import gc
 

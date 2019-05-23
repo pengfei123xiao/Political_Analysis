@@ -5,17 +5,19 @@
 # @FileName: functional_tools.py
 # @Software: PyCharm
 
-import pandas as pd
-import numpy as np
-from pytz import timezone
-from pymongo import MongoClient, UpdateOne
-from textblob import TextBlob
-import emoji
-import re
 import gc
 import json
-from datetime import datetime
+import re
 from collections import Counter
+from datetime import datetime
+
+import emoji
+import numpy as np
+import pandas as pd
+from pymongo import MongoClient, UpdateOne
+from pytz import timezone
+from textblob import TextBlob
+
 gc.enable()
 
 
@@ -78,17 +80,17 @@ class FunctionalTools():
                     hashtags.extend([item['text'] for item in raw_tweet['retweeted_status']['entities']['hashtags']])
 
                 hashtags = list(set(hashtags))
-                required_data.append({'ID':raw_tweet['id_str'], 'Screen_Name':raw_tweet['user']['screen_name'],
-                            'Date':self.timezone_convert_streaming(raw_tweet['created_at']),
-                            'Tweets':content, 'Content_Sentiment':content_sentiment,
-                            'Length':len(raw_tweet['text']),'Language':raw_tweet['lang'],
-                            'Likes':raw_tweet['favorite_count'],
-                            'Retweets':raw_tweet['retweet_count'],
-                            'Mentioned_Screen_Name':mentioned_screen_name_list,
-                            'In_Reply_to_Screen_Name':raw_tweet['in_reply_to_screen_name'],
-                            'In_Reply_to_Status_id':raw_tweet['in_reply_to_status_id_str'],
-                            'Hashtags':hashtags,'Location':raw_tweet['user']['location'],
-                            'Coordinates':raw_tweet['coordinates'],'Source':raw_tweet['source']})
+                required_data.append({'ID': raw_tweet['id_str'], 'Screen_Name': raw_tweet['user']['screen_name'],
+                                      'Date': self.timezone_convert_streaming(raw_tweet['created_at']),
+                                      'Tweets': content, 'Content_Sentiment': content_sentiment,
+                                      'Length': len(raw_tweet['text']), 'Language': raw_tweet['lang'],
+                                      'Likes': raw_tweet['favorite_count'],
+                                      'Retweets': raw_tweet['retweet_count'],
+                                      'Mentioned_Screen_Name': mentioned_screen_name_list,
+                                      'In_Reply_to_Screen_Name': raw_tweet['in_reply_to_screen_name'],
+                                      'In_Reply_to_Status_id': raw_tweet['in_reply_to_status_id_str'],
+                                      'Hashtags': hashtags, 'Location': raw_tweet['user']['location'],
+                                      'Coordinates': raw_tweet['coordinates'], 'Source': raw_tweet['source']})
         return required_data
 
     def tweets_to_dataframe(self, raw_tweets):
@@ -222,7 +224,8 @@ class FunctionalTools():
         df['Description'] = [user_info.description]
         return df
 
-    def save_data(self, tweets_list, db_name, collection_name, operation_type):
+# db_address="115.146.85.107/"
+    def save_data(self, tweets_list, db_name, collection_name, operation_type, db_address="103.6.254.48/"):
         """
         The function is used to update/insert data into MongoDB.
         :param tweets_list: list
@@ -233,11 +236,13 @@ class FunctionalTools():
             Specify the collection we want to store in.
         :param operation_type: str
             Specify the type of operation.
-
+        :param db_address: str
+            Specify the db address to save data
         :return: null
         """
         try:
-            client = MongoClient("mongodb://admin:123@203.101.225.125/")  # carol
+            client = MongoClient("mongodb://admin:123@" + db_address)
+            # 203.101.225.125/")  # carol
             # client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
             # client = MongoClient("mongodb://admin:123@103.6.254.48/")  # DB
             db = client[db_name]
@@ -254,14 +259,15 @@ class FunctionalTools():
         except Exception as e:
             print(e)
 
-    def find_data(self, db_name, collection_name, db_address = "115.146.85.107/"):
+    def find_data(self, db_name, collection_name, db_address="103.6.254.48/"):
         """
         The function is used to show all the data stored in MongoDB.
         :param db_name: str
             Specify the DB we want to obtain data.
         :param collection_name: str
             Specify the collection we want to obtain data.
-
+        :param db_address: str
+            Specify the db address to find data
         :return: list
             A list of results.
         """
@@ -275,7 +281,7 @@ class FunctionalTools():
         collection = db[collection_name]
         return collection.find()
 
-    def find_mongo_by_date(self, db_name, collection_name, start, end, db_address = "103.6.254.48/"):
+    def find_mongo_by_date(self, db_name, collection_name, start, end, db_address="103.6.254.48/"):
         """
         The function is used to show all the data stored in MongoDB.
         :param db_name: str
@@ -286,7 +292,8 @@ class FunctionalTools():
             Specify start date.
         :param end: str
             Specify end date.
-
+        :param db_address: str
+            Specify the db address to find data
         :return: list
             A list of results.
         """

@@ -26,7 +26,6 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
-# # # # TWITTER AUTHENTICATER # # # #
 class TwitterAuthenticator():
 
     def __init__(self,consumer_key, consumer_secret):
@@ -44,8 +43,6 @@ class TwitterAuthenticator():
         auth.set_access_token(access_token, access_token_secret)
         return auth
 
-
-# TWITTER MY STREAM LISTENER # # # #
 class MyStreamListener(StreamListener):
     """
     This is a listener that deals with received tweets.
@@ -64,10 +61,10 @@ class MyStreamListener(StreamListener):
         try:
             self.tweet_count += 1
             self.tweets.append(data)
-            # print(self.tweet_count)
             if self.tweet_count%100 == 0:
                 start_time = time.time()
                 try:
+                    # process data harvested
                     self.analyser.save_data(self.analyser.filter_tweet_streaming(self.tweets), self.database, self.collection, 'insert_many')
                     logger.info("100 tweets was saved")
                     logger.info("spent time: %s", (time.time()-start_time)/60)
@@ -82,11 +79,11 @@ class MyStreamListener(StreamListener):
         return True
 
     def on_status(self,status):
-        # To change
         logger.info("On status", status)
         if status.retweeted_status:
           return
 
+    # Handle errors
     def on_error(self, status):
         if status == 401:
             logger.error("Error on_error 401: Missing or incorrect authentication credentials.")
@@ -117,7 +114,6 @@ class MyStreamListener(StreamListener):
             time.sleep(60)
             return False
 
-# TWITTER STREAMER
 class TwitterStreamer():
     """
     Class for streaming and processing live tweets.
@@ -148,7 +144,7 @@ if __name__ == '__main__':
     conf = config[harvester_id]
 
     auth = TwitterAuthenticator(conf['consumer_key'], conf['consumer_secret']).authenticate_twitter_user(conf['access_token'], conf['access_token_secret'])
-    # .authenticate_twitter_app()
+
     #Run Streaming to get real time tweets
     twitter_streamer = TwitterStreamer(auth)
 
@@ -162,6 +158,7 @@ if __name__ == '__main__':
     db_address = 'mongodb://admin:123@115.146.85.107/'
     database = 'capstone'
     collection = 'streamingMentionedCorrectDate'
+    # Start harvester
     twitter_streamer.stream_tweets(db_address, database, collection, politician_screen_name_list)
 
     gc.collect()

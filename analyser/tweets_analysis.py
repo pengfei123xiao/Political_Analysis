@@ -9,15 +9,30 @@
 import sys
 import nltk
 from nltk.corpus import stopwords
-
+import pandas as pd
 # nltk.download('stopwords')
 sys.path.append('..')
 # from analyser.functional_tools import FunctionalTools
 import collections, functools, operator
 import gc
+import logging
 
 gc.enable()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+file_handler = logging.FileHandler('tweets_analysis.log')
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
+
+def mem_usage(pandas_obj):
+    if isinstance(pandas_obj,pd.DataFrame):
+        usage_b = pandas_obj.memory_usage(deep=True).sum()
+    else: # we assume if not a df it's a series
+        usage_b = pandas_obj.memory_usage(deep=True)
+    usage_mb = usage_b / 1024 ** 2 # convert bytes to megabytes
+    return "{:03.2f} MB".format(usage_mb)
 
 class TweetsAnalysis():
     """
@@ -33,6 +48,8 @@ class TweetsAnalysis():
         self.mentioned_df = mentioned_df
         self.pol_tweets_df = pol_tweets_df
         self.origin_pol_tweets_df = self.pol_tweets_df[~self.pol_tweets_df['Tweets'].str.contains('RT')]
+        self.mentioned_df.info(memory_usage='deep')
+        logger.info("Memory usage of new_mention_df: {}".format(mem_usage(self.mentioned_df)))
 
     def statistical_count(self, screen_name):
         mentioned_count, reply_count, sen_sum = 0, 0, 0
@@ -140,17 +157,17 @@ class TweetsAnalysis():
             self.politician_df['Screen_Name'].apply(lambda x: [(pos_mention_df[
                                                                     pos_mention_df['Mentioned_Screen_Name'].astype(
                                                                         str).str.contains(x, na=False)].groupby(
-                by='State')['ID'].count()).to_dict()])
+                by='State')['Screen_Name'].nunique()).to_dict()])
         self.politician_df['State_Neu'] = \
             self.politician_df['Screen_Name'].apply(lambda x: [(neu_mention_df[
                                                                     neu_mention_df['Mentioned_Screen_Name'].astype(
                                                                         str).str.contains(x, na=False)].groupby(
-                by='State')['ID'].count()).to_dict()])
+                by='State')['Screen_Name'].nunique()).to_dict()])
         self.politician_df['State_Neg'] = \
             self.politician_df['Screen_Name'].apply(lambda x: [(neg_mention_df[
                                                                     neg_mention_df['Mentioned_Screen_Name'].astype(
                                                                         str).str.contains(x, na=False)].groupby(
-                by='State')['ID'].count()).to_dict()])
+                by='State')['Screen_Name'].nunique()).to_dict()])
 
         self.politician_df.drop(columns=['Statistical_Count'], inplace=True)
 

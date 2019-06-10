@@ -1,4 +1,0 @@
-  File "analysis_manager.log", line 1
-    2019-05-21 21:04:28,774 - __main__ - INFO - ============================================
-          ^
-SyntaxError: invalid token

@@ -250,7 +250,7 @@ class FunctionalTools():
             if operation_type == 'insert_one':
                 collection.insert_one(tweets_list)
             elif operation_type == 'insert_many':
-                collection.insert_many(tweets_list)
+                collection.insert_many(tweets_list, ordered=False)
             elif operation_type == 'update':
                 operations = []
                 for item in tweets_list:
@@ -331,5 +331,5 @@ class FunctionalTools():
             tag_arr[flag] = item.lower()
             flag += 1
         tag_count = Counter(tag_arr)
-        top_tags = tag_count.most_common(6)
+        top_tags = tag_count.most_common(5)
         return top_tags

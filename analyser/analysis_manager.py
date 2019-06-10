@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Time    : 12/05/2019 10:05 AM
+# @Time    : 10/05/2019 10:05 AM
 # @Author  : Zhihui Cheng
 # @FileName: analysis_manager.py
 # @Software: PyCharm
@@ -28,14 +28,12 @@ logger.addHandler(file_handler)
 if __name__ == '__main__':
     try:
         # set parameters
-        start_date = datetime(2019, 4, 13, 14, 0, 0)
-        # end_date = datetime(2019, 4, 26)
-        # start_date = datetime.combine(date.today() - timedelta(days=2), dtime(14, 0))
-        end_date = datetime(2019, 4, 15, 14, 0, 0)
-        # end_date = datetime.combine(date.today()- timedelta(days=30), dtime(14, 0))
-        # end_date = datetime.combine(date.today()- timedelta(days=1), dtime(14, 0))
+        # set date to calculate statistcs for yesterday
+        start_date = datetime.combine(date.today() - timedelta(days=1), dtime(14, 0))
+        end_date = datetime.combine(date.today(), dtime(14, 0))
+
         logger.info('============================================')
-        logger.info("Start date: {}; end date: {}.".format(start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')))
+        logger.info("Start date: {}; end date: {}.".format((start_date+timedelta(days=1)).strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')))
         find_ip_address = "115.146.85.107/"
         save_ip_address = ""
         db_name = "backup"
@@ -57,7 +55,7 @@ if __name__ == '__main__':
         logger.info('============================================')
         logger.info("Harvest {} politician's info starts.".format(len(politician_list)))
         pol_info_start_time = time.time()
-        for i in range(len(politician_list[:2])):
+        for i in range(len(politician_list)):
             pol_info_thread = restful_pol_info.RestfulUserInfo(politician_list[i], db_name,
                                                                politician_info_collection_name, state_list[i], ele_list[i],
                                                                party_list[i])
@@ -66,12 +64,14 @@ if __name__ == '__main__':
 
         # harvest politician's tweets
         logger.info('============================================')
+        pol_tweets_start_date = datetime(2019, 5, 17, 14, 0, 0)
+
         logger.info("Harvest {} politician's tweets starts.".format(len(politician_list)))
         pol_tweets_start_time = time.time()
-        for i in range(len(politician_list[:2])):
+        for i in range(len(politician_list)):
             pol_tweets_thread = restful_pol_tweets.RestfulPolTweets(politician_list[i], db_name,
                                                                     politician_tweet_collection_name, state_list[i],
-                                                                    ele_list[i], party_list[i], start_date)
+                                                                    ele_list[i], party_list[i], pol_tweets_start_date)
             # logger.info("Crawling tweets of {}.".format(politician_list[i]))
             pol_tweets_thread.start()
 
@@ -83,6 +83,7 @@ if __name__ == '__main__':
         politician_df = pd.DataFrame(list(politician_from_mongo))
         del politician_from_mongo
         gc.collect()
+
         # save politicianInfo to daily
         result_dict['Date'] = datetime.combine(date.today() - timedelta(days=1), datetime.min.time())
         result_dict['data'] = politician_df.to_dict('records')
@@ -100,20 +101,20 @@ if __name__ == '__main__':
         gc.collect()
         logger.info("Politician's tweets read time: {}".format(datetime.now() - read_pol_tweets_start_time))
 
-        # # calculate top five hash tags of politicians' tweets
-        # top_tags = f_tools.count_popular_hashtag(pol_tweets_df)
-        # hashtag_list = ["#" + tag[0] for tag in top_tags]
+        # calculate top five hash tags of politicians' tweets
+        top_tags = f_tools.count_popular_hashtag(pol_tweets_df)
+        hashtag_list = ["#" + tag[0] for tag in top_tags]
 
-        # # harvest user's tweets for top five hash tags
-        # hashtag_tweets_start_time = time.time()
-        # logger.info('============================================')
-        # logger.info('Harvest tweets with hashtags starts')
-        # restful_hashtag = restful_by_hashtag.RestfulHashtags(start_date, hashtag_list, db_name, hashtag_collection_name)
-        # restful_hashtag.start()
+        # harvest user's tweets for top five hash tags
+        hashtag_tweets_start_time = time.time()
+        logger.info('============================================')
+        logger.info('Harvest tweets with hashtags starts')
+        restful_hashtag = restful_by_hashtag.RestfulHashtags(start_date, hashtag_list, db_name, hashtag_collection_name)
+        restful_hashtag.start()
 
         # read user's tweets who mentioned the politicians
         logger.info('============================================')
-        logger.info("Read mentioned tweets starts")
+        logger.info("Read mentioned tweets without state starts")
         read_men_tweets_start_time = time.time()
         totalMention_from_mongo = f_tools.find_mongo_by_date('capstone', 'streamingMentionedCorrectDate',
                                                              start_date, end_date, find_ip_address)
@@ -137,14 +138,26 @@ if __name__ == '__main__':
         cumulative_analysis = cumulative_analysis.CumulativeAnalysis(start_date, end_date, f_tools,
                                                                      politician_df)
         cumulative_analysis.start()
-
         cumulative_analysis.join()
         logger.info(
             'Cumulative analysis finishes. Time used: %f mins' % ((time.time() - cumulative_analysis_start_time) / 60))
 
-        # restful_hashtag.join()
-        # logger.info(
-        #     'Harvest tweets with hashtags finished. Time used: %f mins' % ((time.time() - hashtag_tweets_start_time) / 60))
+        restful_hashtag.join()
+        logger.info(
+            'Harvest tweets with hashtags finished. Time used: %f mins' % ((time.time() - hashtag_tweets_start_time) / 60))
+
+        # read user's tweets who mentioned the politicians
+        logger.info('============================================')
+        logger.info("Read mentioned tweets with state starts")
+        read_men_tweets_state_start_time = time.time()
+        totalMention_from_mongo = f_tools.find_mongo_by_date('backup', 'totalMentionedWithState',
+                                                             start_date, end_date)
+        totalMention_df = pd.DataFrame(list(totalMention_from_mongo))
+        logger.info('{} mentioned tweets with state loaded. Time used: {} mins'.format(len(totalMention_df.index), (
+                time.time() - read_men_tweets_state_start_time) / 60))
+        del totalMention_from_mongo
+        gc.collect()
+
         logger.info('============================================')
         logger.info("Daily analysis starts")
         daily_analysis_start_time = time.time()
@@ -154,6 +167,8 @@ if __name__ == '__main__':
         daily_analysis.start()
         daily_analysis.join()
         logger.info('Daily analysis finishes. Time used: %f mins' % ((time.time() - daily_analysis_start_time) / 60))
+
+
         gc.collect()
     except Exception as e:
         logger.error(e)

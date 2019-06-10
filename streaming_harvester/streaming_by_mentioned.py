@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 10/04/2019 10:05 AM
+# @Author  : Zhihui Cheng
+# @FileName: streaming_by_mentioned.py
+# @Software: PyCharm
+
 import sys
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler, AppAuthHandler, Stream, API

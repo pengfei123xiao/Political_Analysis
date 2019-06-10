@@ -27,20 +27,17 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
-# class AttachCoordinate(Process):
+
 class AttachState(threading.Thread):
     def __init__(self, start_date, end_date, f_tools, totalMention_df, gmap_key):
         """
         :param :
         """
-        # super().__init__()
+
         threading.Thread.__init__(self)
         self.gmap_key = gmap_key
         self.totalMention_df = totalMention_df
         self.f_tools = f_tools
-        # self.new_mention_df = self.totalMention_df[
-        #     (self.totalMention_df['Date'] >= start_date) & (self.totalMention_df['Date'] < end_date)].drop_duplicates(
-        #     ['ID'])
         self.totalMention_df.drop_duplicates(subset ='ID',keep = "first", inplace = True)
 
 
@@ -56,12 +53,13 @@ class AttachState(threading.Thread):
         gc.collect()
         return new_loc_list
 
+    # convert the location to coordinate by google api
     def location_to_coordinate(self, location):
         try:
             logger.info(location)
             geocode_result = self.gmap_key.geocode(location)
             time.sleep(1)
-            logger.info(geocode_result)
+            # logger.info(geocode_result)
             lat = geocode_result[0]['geometry']['location']['lat']
             lng = geocode_result[0]['geometry']['location']['lng']
         except Exception as e:
@@ -69,6 +67,7 @@ class AttachState(threading.Thread):
             return None
         return (lat, lng)
 
+    # save the coordinate and location pair to database
     def calculate_coordinates(self, new_loc_list):
         logger.info('Thread to calculate coordinates from location starts.')
         convert_df = pd.DataFrame()
@@ -80,6 +79,7 @@ class AttachState(threading.Thread):
         del convert_df
         gc.collect()
 
+    # calculate the state by check the coordinate in the polygon
     def calculate_state_by_coordinate(self, coordinate, polygons):
         # [96.8168,-43.7405,159.1092,-9.1422] boudning box of australia
         if 96.8168 <= coordinate[1] <= 159.1092 and -43.7405 <= coordinate[0] <= -9.1422:
@@ -89,6 +89,7 @@ class AttachState(threading.Thread):
                     return poly['properties']['STE_NAME16']
         return None
 
+    # calculate and attach the state to mentioned collection
     def calculate_state(self):
         logger.info('Thread to calculate states starts.')
         loc_result_from_mongo = self.f_tools.find_data('backup', 'locToCoo')
@@ -136,6 +137,7 @@ class AttachState(threading.Thread):
         del final_mention_df
         gc.collect()
 
+    # run the thread
     def run(self):
         new_loc_list = self.calculate_new_locations()
         self.calculate_coordinates(new_loc_list)
@@ -143,13 +145,12 @@ class AttachState(threading.Thread):
 
 
 if __name__ == '__main__':
-    # start_date = datetime.datetime.today() - datetime.timedelta(days=1)
+    # discarded, call from analysis manager
     start_date = datetime(2019, 5, 12)
     end_date = datetime(2019, 5, 18)
     start_time = time.time()
     f_tools = functional_tools.FunctionalTools()
 
-    # totalMention_from_mongo = f_tools.find_data('backup', 'totalMentioned')
     totalMention_from_mongo = f_tools.find_mongo_by_date('capstone', 'streamingMentionedCorrectDate', start_date,
                                                          end_date)
 
@@ -159,17 +160,8 @@ if __name__ == '__main__':
 
     print('Data loaded. Time used: %f mins' % ((time.time() - start_time) / 60))
 
-    # gmap_key1 = googlemaps.Client(key='AIzaSyAnnzRxDBvuUIQgj7AzbVKmYfoNNHCuG7U', timeout=200)
-
-    # gmap_key2 = googlemaps.Client(key='AIzaSyDYUzZHXqyPCijvhO6IL9Eo4RyjnL0M9yA', timeout=200)
-    gmap_key3 = googlemaps.Client(key='AIzaSyBEGnKK5sbPBXi2tL4o7LFahhEniTaLQTY', timeout=200)  # edward
+    gmap_key3 = googlemaps.Client(key='AIzaSyBEGnKK5sbPBXi2tL4o7LFahhEniTaLQTY', timeout=200)  # edward's key
     temp_df = totalMention_df[totalMention_df['Location'] != ''].copy()
-    # daily_df['Coordinates']=daily_df['Location'].apply(lambda x: location_to_coordinate(x))
-    # loc_arr = np.unique(temp_df['Location'].astype(str).values)
-    # print(type(loc_arr))
-    # print('Unique location: {}'.format(loc_arr.size))
-
-    # "115.146.85.107/",
     loc_result_from_mongo = f_tools.find_data('backup', 'locToCoo')
     loc_result_df = pd.DataFrame(list(loc_result_from_mongo))
     new_loc_list = list(set(temp_df['Location'].unique()) - set(loc_result_df['Location']))
@@ -177,19 +169,10 @@ if __name__ == '__main__':
     print(len(set(new_loc_list)))
     del loc_result_from_mongo, loc_result_df, totalMention_df, temp_df
     gc.collect()
-    # batch_size = int(loc_arr.size / 3)
     batch_size = int(len(new_loc_list) / 3)
 
     print('Start converting. Time used: %f mins' % ((time.time() - start_time) / 60))
-    # thread1 = AttachCoordinate(new_loc_list[:batch_size], gmap_key1, 1)
-    # thread2 = AttachCoordinate(new_loc_list[batch_size:batch_size * 2], gmap_key2, 2)
-    # thread3 = AttachCoordinate(new_loc_list[batch_size * 2:], gmap_key3, 3)
     thread3 = AttachCoordinate(new_loc_list, gmap_key3, 3)
-
-    # thread1.start()
-    # thread2.start()
     thread3.start()
-    # thread1.join()
-    # thread2.join()
     thread3.join()
     print('Finished. Time used: %f mins' % ((time.time() - start_time) / 60))

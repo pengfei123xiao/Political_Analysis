@@ -56,7 +56,7 @@ class DailyAnalysis(threading.Thread):
 
             new_mention_df = self.totalMention_df[
                 (self.totalMention_df['Date'] >= start) & (self.totalMention_df['Date'] < end)]
-            user_hashtag_tweets_df = user_hashtag_tweets_df.append(new_mention_df, ignore_index=True)
+            user_hashtag_tweets_df = user_hashtag_tweets_df.append(new_mention_df, ignore_index=True,sort=False)
             print('Daily tweets loaded.')
 
             daily_analysis = tweets_analysis.TweetsAnalysis(self.politician_df, new_mention_df, new_pol_tweets_df)

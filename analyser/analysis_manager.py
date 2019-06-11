@@ -131,7 +131,7 @@ if __name__ == '__main__':
         gc.collect()
 
         # attach state information to the tweets
-        gmap_key = googlemaps.Client(key='AIzaSyBEGnKK5sbPBXi2tL4o7LFahhEniTaLQTY', timeout=200)  # edward
+        gmap_key = googlemaps.Client(key='###', timeout=200)  # Google api key required
         attach_state_thread = attach_state.AttachState(start_date, end_date, f_tools, totalMention_df, gmap_key)
 
         attach_state_thread.start()

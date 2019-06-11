@@ -5,12 +5,14 @@
 # @FileName: functional_tools.py
 # @Software: PyCharm
 
+"""This file defines all functionality for analysing and reformatting content from tweets."""
+
 import gc
 import json
 import re
 from collections import Counter
 from datetime import datetime
-
+from tweepy import AppAuthHandler
 import emoji
 import numpy as np
 import pandas as pd
@@ -22,27 +24,55 @@ gc.enable()
 
 
 class FunctionalTools():
-    """
-    Functionality for analyzing and categorizing content from tweets.
-    """
+    def authenticate_twitter_app(self, consumer_key, consumer_secret):
+        """
+        Twitter API authentication.
+        :param consumer_key: str
+            Consumer key.
+        :param consumer_secret: str
+            Consumer secret key.
+
+        :return: auth object
+        """
+        CONSUMER_KEY = consumer_key
+        CONSUMER_SECRET = consumer_secret
+        auth = AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)  # higher rate limit than OAuthHandler
+        return auth
 
     def timezone_convert_streaming(self, utc_str):
+        """
+        Convert time string in tweet streaming object into datetime string in Sydney timezone.
+        :param utc_str: str
+            Time string from tweet streaming object.
+
+        :return: str
+            Datetime string in Sydney timezone.
+        """
         au_tz = timezone('Australia/Sydney')
         au_dt = datetime.strptime(utc_str, '%a %b %d %H:%M:%S %z %Y').astimezone(au_tz)
         return au_dt
 
-    def timezone_convert(self, utc_dt):
-        au_tz = timezone('Australia/Sydney')
-        fmt = '%Y-%m-%d %H:%M:%S %Z%z'
-        au_dt = utc_dt.astimezone(au_tz)
-        au_dt.strftime(fmt)
-        return au_dt
-
     def clean_tweet(self, tweet):
+        """
+        Regular expression and emoji interpretation on the tweets content.
+        :param tweet: str
+            Tweet content.
+
+        :return: str
+            Cleaned content.
+        """
         tweet = emoji.demojize(tweet)  # interpret emoji
         return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
 
     def analyze_sentiment(self, tweet):
+        """
+        Sentiment analysis on tweets to classify tweets into positive, neutral and negative.
+        :param tweet: str
+            Tweet content.
+
+        :return: int
+            1 means positive, 0 means neutral, -1 means negative.
+        """
         analysis = TextBlob(self.clean_tweet(tweet))
         if analysis.sentiment.polarity > 0:
             return 1
@@ -52,12 +82,19 @@ class FunctionalTools():
             return -1
 
     def filter_tweet_streaming(self, raw_tweets_str):
+        """
+        Extract useful key in tweet streaming object.
+        :param raw_tweets_str: str
+            Raw tweets.
+
+        :return: list
+            A list of cleaned tweets.
+        """
         required_data = []
         for raw_tweet_str in raw_tweets_str:
             raw_tweet = json.loads(raw_tweet_str)
             if 'limit' not in raw_tweet:
                 mentioned_screen_name_list = [user['screen_name'] for user in raw_tweet['entities']['user_mentions']]
-                # print(1)
                 hashtags = []
 
                 if 'extended_tweet' in raw_tweet:
@@ -76,7 +113,6 @@ class FunctionalTools():
                     else:
                         text = raw_tweet['retweeted_status']['text']
                     content = content + 'RT @' + raw_tweet['retweeted_status']['user']['screen_name'] + ': ' + text
-                    # hashtags_retweeted =
                     hashtags.extend([item['text'] for item in raw_tweet['retweeted_status']['entities']['hashtags']])
 
                 hashtags = list(set(hashtags))
@@ -95,9 +131,9 @@ class FunctionalTools():
 
     def tweets_to_dataframe(self, raw_tweets):
         """
-        Convert raw data into structured data.
+        Convert raw tweet restful object into structured data.
         :param raw_tweets: Status
-            Status data from twitter API.
+            Status data from twitter restful API.
 
         :return: dataframe
             Structured dataframe.
@@ -140,9 +176,9 @@ class FunctionalTools():
 
     def pol_tweets_to_dataframe(self, raw_tweets, state_name, electorate_name, party_name):
         """
-        Convert raw data into structured data.
+        Convert raw tweet restful object into structured data.
         :param raw_tweets: Status
-            Status data from twitter API.
+            Status data from twitter restful API.
         :param state_name: str
             State name of a politician.
         :param electorate_name: str
@@ -194,7 +230,7 @@ class FunctionalTools():
 
     def politician_info_to_dataframe(self, user_info, state_name, electorate_name, party_name):
         """
-        Convert politicians' raw data into structured data.
+        Convert politicians' raw account information into structured data.
         :param user_info: User Status
             User raw data from twitter API.
         :param state_name: str
@@ -224,7 +260,6 @@ class FunctionalTools():
         df['Description'] = [user_info.description]
         return df
 
-# db_address="115.146.85.107/"
     def save_data(self, tweets_list, db_name, collection_name, operation_type, db_address="103.6.254.48/"):
         """
         The function is used to update/insert data into MongoDB.
@@ -237,14 +272,12 @@ class FunctionalTools():
         :param operation_type: str
             Specify the type of operation.
         :param db_address: str
-            Specify the db address to save data
+            Specify the database address to save data
+
         :return: null
         """
         try:
             client = MongoClient("mongodb://admin:123@" + db_address)
-            # 203.101.225.125/")  # carol
-            # client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
-            # client = MongoClient("mongodb://admin:123@103.6.254.48/")  # DB
             db = client[db_name]
             collection = db[collection_name]
             if operation_type == 'insert_one':
@@ -261,31 +294,27 @@ class FunctionalTools():
 
     def find_data(self, db_name, collection_name, db_address="103.6.254.48/"):
         """
-        The function is used to show all the data stored in MongoDB.
+        The function is used to find all the data stored in MongoDB.
         :param db_name: str
             Specify the DB we want to obtain data.
         :param collection_name: str
             Specify the collection we want to obtain data.
         :param db_address: str
-            Specify the db address to find data
+            Specify the database address to find data.
+
         :return: list
             A list of results.
         """
-        # client = MongoClient('mongodb+srv://chen:123@nlptest-r26bl.gcp.mongodb.net/test?retryWrites=true')
-        # client = MongoClient("mongodb://admin:123@" + db_address)  # carol
         client = MongoClient("mongodb://admin:123@" + db_address)
-        # 203.101.225.125/")  # carol
-        # client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
-        # client = MongoClient("mongodb://admin:123@103.6.254.48/")  # DB
         db = client[db_name]
         collection = db[collection_name]
         return collection.find()
 
     def find_mongo_by_date(self, db_name, collection_name, start, end, db_address="103.6.254.48/"):
         """
-        The function is used to show all the data stored in MongoDB.
+        The function is used to find the data filtered by a specific time period in MongonDB.
         :param db_name: str
-            This string is used to set specific db name.
+            This string is used to set specific database name.
         :param collection_name: string
             This string is used to set specific collection name.
         :param start: str
@@ -293,21 +322,26 @@ class FunctionalTools():
         :param end: str
             Specify end date.
         :param db_address: str
-            Specify the db address to find data
+            Specify the database address.
+
         :return: list
             A list of results.
         """
-        # client = MongoClient('mongodb+srv://chen:123@nlptest-r26bl.gcp.mongodb.net/test?retryWrites=true')
-
-        client = MongoClient("mongodb://admin:123@" + db_address)  # carol
-        # client = MongoClient("mongodb://admin:123@203.101.225.125/")  # carol
-        # client = MongoClient("mongodb://admin:123@115.146.85.107/")
+        client = MongoClient("mongodb://admin:123@" + db_address)
         db = client[db_name]
         collection = db[collection_name]
-        # return collection.find({'Date': {'$lt': end}})
         return collection.find({'Date': {'$lt': end, '$gte': start}})
 
     def drop_collection(self, db_name, collection_name):
+        """
+        The function is used to drop collections in MongoDB.
+        :param db_name: str
+            Specify database name.
+        :param collection_name: str
+            Specify collection name.
+
+        :return: None
+        """
         client = MongoClient("mongodb://admin:123@115.146.85.107/")  # backend
         # client = MongoClient("mongodb://admin:123@103.6.254.48/") #DB
         db = client[db_name]
@@ -316,11 +350,13 @@ class FunctionalTools():
 
     def count_popular_hashtag(self, tweets_df):
         """
-        Calculate top six hashtags.
-        :param tweets_df:
-        :return:
+        Calculate top five hash tags.
+        :param tweets_df: dataframe
+            Tweets dataframe.
+
+        :return: list
+            Popular hash tags list.
         """
-        #  tweet_with_tag_df = self.tweets_df[self.tweets_df['Hashtags'].astype(str) != '[]'].copy()
         tweet_with_tag_df = tweets_df[tweets_df['Hashtags'].astype(str) != '[]'].copy()
         tag_list = []
         for _, v in tweet_with_tag_df['Hashtags'].iteritems():

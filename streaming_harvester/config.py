@@ -1,7 +1,11 @@
-"""
-This file presets all the parameters for database and Twitter API account
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 11/04/2019 10:05 AM
+# @Author  : Zhihui Cheng
+# @FileName: config.py
+# @Software: PyCharm
 
-"""
+"""This file presets all the parameters for database and Twitter API account."""
 
 # Twitter API Keys-Siyu
 processor_1 = {}
@@ -13,9 +17,9 @@ processor_1['consumer_key'] = "wWFHsJ71LrXoX0LRFNCVYxLoY"
 processor_1['consumer_secret'] = "dpOn4LvtZ0MqxgtFZB0XXFKz9wK7csAHLkusJ8JasUJIxFt6Qm"
 processor_1['access_token'] = "1104525213847318529-S0OLx8OztXjSxeGCGITcGhVa2EMz5b"
 processor_1['access_token_secret'] = "wEAjXPqWPygScOzAc8RRwiHzeg1G0mGVt20qZLoJGQuDe"
-processor_1['task'] =  "harvestOriginAndReply"
+processor_1['task'] = "harvestOriginAndReply"
 
-#Twitter API Keys-Zhihui
+# Twitter API Keys-Zhihui
 processor_2 = {}
 processor_2['mongodb_address'] = ""
 processor_2['mongodb_db_name'] = ""
@@ -25,7 +29,7 @@ processor_2['consumer_key'] = "bn7SyLy96ywHf4DHHwzgDYO7Z"
 processor_2['consumer_secret'] = "uCTo7SznGT7atEnDJhaEJpMsvDhRypkO8CRDhxlNcO8SL6j86v"
 processor_2['access_token'] = "1105316173904674817-Xs5wb3q1MM1brHu1ITySaRqyaOppwt"
 processor_2['access_token_secret'] = "kPRKEZomlu2nKQRZAfpXw4PXMqofuPiJ9bli1z1BruqwR"
-processor_2['task'] =  "harvestMentioned"
+processor_2['task'] = "harvestMentioned"
 
 # Twitter API Keys-PengFei
 processor_3 = {}
@@ -37,7 +41,7 @@ processor_3['consumer_key'] = "YZXvTb6qbwRuPflCS6gUDuxnL"
 processor_3['consumer_secret'] = "uZi7W0uUEfCGi4vwlkruX0JSe8JZV47UH5AFHptU0JYdPp"
 processor_3['access_token'] = "967540920290754560-IWECpltxXhsZGUCQLPAGH1xIXds2TEz"
 processor_3['access_token_secret'] = "l96uRBEq4s2syHCCvmtGBooe1XqsMZT7Jo2R0D1u9WeqO"
-processor_3['task'] =  "harvestHashTag"
+processor_3['task'] = "harvestHashTag"
 
 # Twitter API Keys-Yiru1
 processor_4 = {}
@@ -82,7 +86,7 @@ processor_7['consumer_key'] = "H9JyGn63IGHAAfHmbyvTximim"
 processor_7['consumer_secret'] = "hLJbC2cMNrlUnFSdraYjfdc7PjbrtqZzlhwVvF3YAEr8iVPK2N"
 processor_7['access_token'] = "813695056997552128-fDxRSmrVcMqJdmSiMU1BJILWkrd3ILT"
 processor_7['access_token_secret'] = "5G4bzvmNS34kjHaZLePvpMzEW2vKAbkWrlcKUUAUakvQH"
-processor_7['task'] =  "StreamingharvestMentioned"
+processor_7['task'] = "StreamingharvestMentioned"
 
 # Twitter API Keys-Zhihui-Oli4
 processor_8 = {}
@@ -94,10 +98,10 @@ processor_8['consumer_key'] = "8PNF7aMlERZFxs6qYlowHLSQe"
 processor_8['consumer_secret'] = "qP0KKhVpLkXlO4wJdKHKwZJfDDruFLpSBeIKlueZWIoaAl4EX9"
 processor_8['access_token'] = "852460734524964869-D3kZYGXzZ7xB2hIpv1G8p6NGndiqnTH"
 processor_8['access_token_secret'] = "P0MfyHNL6quP4SRMQU0JmCCh7x4VIBQzud2Qa0OiswPok"
-processor_8['task'] =  "StreamingharvestMentioned"
+processor_8['task'] = "StreamingharvestMentioned"
 
 config = {}
 print(type(config))
 for i in range(8):
-    config[i+1] = locals()["processor_"+str(i+1)]
+    config[i + 1] = locals()["processor_" + str(i + 1)]
 print(config)

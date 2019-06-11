@@ -5,6 +5,8 @@
 # @FileName: cumulative_analysis.py
 # @Software: PyCharm
 
+"""This file defines all cumulative analysis steps."""
+
 import sys
 import time
 from datetime import datetime, timedelta
@@ -24,19 +26,17 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
+
 def mem_usage(pandas_obj):
-    if isinstance(pandas_obj,pd.DataFrame):
+    if isinstance(pandas_obj, pd.DataFrame):
         usage_b = pandas_obj.memory_usage(deep=True).sum()
-    else: # we assume if not a df it's a series
+    else:  # we assume if not a df it's a series
         usage_b = pandas_obj.memory_usage(deep=True)
-    usage_mb = usage_b / 1024 ** 2 # convert bytes to megabytes
+    usage_mb = usage_b / 1024 ** 2  # convert bytes to megabytes
     return "{:03.2f} MB".format(usage_mb)
 
 
 class CumulativeAnalysis(threading.Thread):
-    """
-
-    """
 
     def __init__(self, start_date, end_date, f_tools, politician_df):
         """
@@ -49,7 +49,8 @@ class CumulativeAnalysis(threading.Thread):
 
     def run(self):
 
-        pol_tweets_from_mongo = self.f_tools.find_mongo_by_date("backup", 'restfulTweets', datetime(2019, 4, 13, 14, 0, 0),
+        pol_tweets_from_mongo = self.f_tools.find_mongo_by_date("backup", 'restfulTweets',
+                                                                datetime(2019, 4, 13, 14, 0, 0),
                                                                 self.end_date)
         pol_tweets_df = pd.DataFrame(list(pol_tweets_from_mongo))
         del pol_tweets_from_mongo
@@ -60,7 +61,6 @@ class CumulativeAnalysis(threading.Thread):
         for i in range((self.end_date - self.start_date).days):
             start_time = time.time()
             result_dict = {}
-            # start = self.start_date + timedelta(days=i)
             end = self.start_date + timedelta(days=i + 1)
             mentionState_from_mongo = self.f_tools.find_mongo_by_date('backup', 'totalMentionedWithState',
                                                                       datetime(2019, 4, 13), end)
@@ -69,13 +69,15 @@ class CumulativeAnalysis(threading.Thread):
             gc.collect()
 
             new_mention_df.info(memory_usage='deep')
-            logger.info("Memory usage of new_mention_df before drop columns: {}, shape: {}".format(mem_usage(new_mention_df), new_mention_df.shape))
-            # new_mention_df.drop('', axis=1)
-            new_mention_df.drop(['Coordinates', 'Language','Length','Likes','Location','Source','Tweets'], axis=1, inplace=True)
-            logger.info("Memory usage of new_mention_df after drop columns: {}, shape: {}".format(mem_usage(new_mention_df), new_mention_df.shape))
+            logger.info(
+                "Memory usage of new_mention_df before drop columns: {}, shape: {}".format(mem_usage(new_mention_df),
+                                                                                           new_mention_df.shape))
+            new_mention_df.drop(['Coordinates', 'Language', 'Length', 'Likes', 'Location', 'Source', 'Tweets'], axis=1,
+                                inplace=True)
+            logger.info(
+                "Memory usage of new_mention_df after drop columns: {}, shape: {}".format(mem_usage(new_mention_df),
+                                                                                          new_mention_df.shape))
             gc.collect()
-            # new_mention_df = mentionState_df[mentionState_df['Date'] < end]
-            # new_mention_df = self.totalMention_df[self.totalMention_df['Date'] < end]
             new_pol_tweets_df = pol_tweets_df[pol_tweets_df['Date'] < end]
 
             cumulative_analysis = tweets_analysis.TweetsAnalysis(self.politician_df, new_mention_df, new_pol_tweets_df)
@@ -93,12 +95,6 @@ class CumulativeAnalysis(threading.Thread):
             gc.collect()
 
             # ===cumulative party data===
-            # temp_df = extend_politician_df.copy()
-            # temp_df.drop(columns=['Avatar', 'Create_Time', 'Description', 'Electoral_District', 'ID',
-            #                       'Location', 'Name', 'Screen_Name', 'State', '_id'], inplace=True)
-            # extend_politician_df.drop(columns=['Avatar', 'Create_Time', 'Description', 'Electoral_District', 'ID',
-            #                                    'Location', 'Name', 'Screen_Name', 'State', '_id'], inplace=True)
-            """drop后报screen_name key error，待解决"""
             sum_party_df = extend_politician_df.groupby(by='Party').agg('sum')
             sum_party_df['Word_Cloud'] = sum_party_df.index.map(
                 lambda x: cumulative_analysis.word_frequency(x, 'Party'))
@@ -115,12 +111,10 @@ class CumulativeAnalysis(threading.Thread):
             result_dict['data'] = {'sumPolitician': extend_politician_df.to_dict('records'),
                                    'sumParty': sum_party_df.to_dict('records')
                                    }
-            # f_tools.save_data(result_dict, 'test', 'sumHead', 'insert_one')
             self.f_tools.save_data(result_dict, 'test', 'sumTest', 'insert_one', '103.6.254.48/')
 
             del extend_politician_df, sum_party_df
             logger.info('{} cumulative analysis finished. Time used: {} mins'.format(datetime.strftime(end, '%b-%d-%Y'),
-                                                                           (time.time() - start_time) / 60))
-        # del mentionState_df
+                                                                                     (time.time() - start_time) / 60))
         del pol_tweets_df
         gc.collect()

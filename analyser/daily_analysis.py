@@ -5,6 +5,8 @@
 # @FileName: daily_analysis.py
 # @Software: PyCharm
 
+"""This file defines all daily analysis steps."""
+
 import datetime
 import sys
 import threading
@@ -21,13 +23,8 @@ gc.enable()
 
 
 class DailyAnalysis(threading.Thread):
-    """
-
-    """
 
     def __init__(self, start_date, end_date, f_tools, totalMention_df, pol_tweets_df, politician_df):
-        """
-        """
         threading.Thread.__init__(self)
         self.start_date = start_date
         self.end_date = end_date
@@ -37,7 +34,6 @@ class DailyAnalysis(threading.Thread):
         self.politician_df = politician_df
 
     def run(self):
-        # daily analysis
         state_list = ['New South Wales', 'Victoria', 'Queensland', 'South Australia', 'Western Australia',
                       'Northern Territory', 'Australian Capital Territory', 'Other Territories', 'Tasmania']
         for i in range((self.end_date - self.start_date).days):
@@ -46,7 +42,7 @@ class DailyAnalysis(threading.Thread):
             result_dict = {}
             print('{} daily analysis starts.'.format(datetime.strftime(start, '%b-%d-%Y')))
             start_time = time.time()
-            # read daily data from mongo
+            # ===read daily data from mongo===
             new_pol_tweets_df = self.pol_tweets_df[
                 (self.pol_tweets_df['Date'] >= start) & (self.pol_tweets_df['Date'] < end)]
 
@@ -93,8 +89,6 @@ class DailyAnalysis(threading.Thread):
                                    'dailyPolitician': extend_politician_df.to_dict('records'),
                                    'dailyParty': daily_party_df.to_dict('records')
                                    }
-
-            # f_tools.save_data(result_dict, 'test', 'dailyHead', 'insert_one')
             self.f_tools.save_data(result_dict, 'test', 'dailyTest', 'insert_one', "103.6.254.48/")
 
             del new_mention_df, new_pol_tweets_df, user_hashtag_tweets_df, extend_politician_df

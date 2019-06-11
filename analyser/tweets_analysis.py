@@ -5,14 +5,16 @@
 # @FileName: tweets_analysis.py
 # @Software: PyCharm
 
-# nltk.download('stopwords')
-import sys
+"""This file defines all functionality for tweets statistical analysis."""
+
 import nltk
 from nltk.corpus import stopwords
+
+nltk.download('stopwords')
 import pandas as pd
-# nltk.download('stopwords')
+import sys
+
 sys.path.append('..')
-# from analyser.functional_tools import FunctionalTools
 import collections, functools, operator
 import gc
 import logging
@@ -27,22 +29,15 @@ logger.addHandler(file_handler)
 
 
 def mem_usage(pandas_obj):
-    if isinstance(pandas_obj,pd.DataFrame):
+    if isinstance(pandas_obj, pd.DataFrame):
         usage_b = pandas_obj.memory_usage(deep=True).sum()
-    else: # we assume if not a df it's a series
+    else:  # we assume if not a df it's a series
         usage_b = pandas_obj.memory_usage(deep=True)
-    usage_mb = usage_b / 1024 ** 2 # convert bytes to megabytes
+    usage_mb = usage_b / 1024 ** 2  # convert bytes to megabytes
     return "{:03.2f} MB".format(usage_mb)
 
-class TweetsAnalysis():
-    """
-    This class is used to analysis politician and party statistical data.
-    Attributes:
-        :param politician_df:
-        :param mentioned_df:
-        :param pol_tweets_df:
-    """
 
+class TweetsAnalysis():
     def __init__(self, politician_df, mentioned_df, pol_tweets_df):
         self.politician_df = politician_df
         self.mentioned_df = mentioned_df
@@ -52,14 +47,18 @@ class TweetsAnalysis():
         logger.info("Memory usage of new_mention_df: {}".format(mem_usage(self.mentioned_df)))
 
     def statistical_count(self, screen_name):
-        mentioned_count, reply_count, sen_sum = 0, 0, 0
-        head_pos, head_neu, head_neg = 0, 0, 0
+        """
+        Mention and sentiment data calculation for every politician.
+        :param screen_name: str
+            Politician screen name.
+
+        :return: list
+            A list of mention and sentiment count results.
+        """
+        mentioned_count, head_pos, head_neu, head_neg = 0, 0, 0, 0
         mentioned_user_dic = {}
-        # print(self.mentioned_df.shape)
-        self.mentioned_df.reset_index(drop=True, inplace = True)
+        self.mentioned_df.reset_index(drop=True, inplace=True)
         for index, s_list in self.mentioned_df['Mentioned_Screen_Name'].iteritems():
-            # print(index)
-            # print(s_list)
             if screen_name in s_list:
                 mentioned_count += 1
                 user_screen_name = self.mentioned_df['Screen_Name'].iloc[index]
@@ -70,24 +69,25 @@ class TweetsAnalysis():
                     mentioned_user_dic[user_screen_name] = [0, 0, 0]
                     mentioned_user_dic[user_screen_name][self.mentioned_df['Content_Sentiment'].iloc[index] + 1] += 1
         for i, v in mentioned_user_dic.items():
-            if v[2] - v[0] > 0:
+            if v[2] - v[0] > 0:  # if pos > neg
                 head_pos += 1
-            elif v[2] - v[0] == 0:
+            elif v[2] - v[0] == 0:  # if pos = neg
                 head_neu += 1
-            else:
+            else:  # if pos < neg
                 head_neg += 1
-        mentioned_count = mentioned_count - reply_count
-        return [mentioned_count, head_pos, head_neu, head_neg]  # , pos, neu, neg]
+        return [mentioned_count, head_pos, head_neu, head_neg]
 
     def word_frequency(self, name, column):
         """
+        Count word frequency to create a word cloud.
         :param name: str
             Screen name or party name.
         :param column: str
             Column name.
-        :return:
+
+        :return: dict
+            A dictionary contains top 50 words and their frequency.
         """
-        # tweets = self.pol_tweets_df[self.pol_tweets_df['Screen_Name'] == screen_name]['Tweets'].tolist()
         tweets = self.origin_pol_tweets_df[self.origin_pol_tweets_df[column] == name]['Tweets'].tolist()
         sr = stopwords.words('english')
         sr.extend(['-', '&amp;', '|', '…'])
@@ -102,16 +102,21 @@ class TweetsAnalysis():
             if not any(x in token for x in special_words) and token not in sr:
                 clean_tokens.append(token)
 
-        # calculate frequence of word
+        # calculate frequency of word
         freq = nltk.FreqDist(clean_tokens)
         top_fifty = freq.most_common(50)
-
         result = []
         for item in top_fifty:
             result.append({'text': item[0], 'value': item[1]})
         return result
 
     def features_concat(self):
+        """
+        Attach all the calculated features to politician dataframe.
+
+        :return: Dataframe
+            A dataframe storing the politician info and statistical data.
+        """
         self.politician_df['Tweets_Count'] = self.politician_df['Screen_Name'].apply(
             lambda x: (self.pol_tweets_df['Screen_Name'] == x).sum() if x in self.pol_tweets_df[
                 'Screen_Name'].tolist() else 0)
@@ -137,8 +142,7 @@ class TweetsAnalysis():
             lambda x: neg_pol_tweets_df.groupby(by='Screen_Name')['Content_Sentiment'].count()[x] if x in
                                                                                                      neg_pol_tweets_df[
                                                                                                          'Screen_Name'].tolist() else 0)
-
-        """statistical count from reply tweets"""
+        # ===statistical count from reply tweets===
         self.politician_df['Statistical_Count'] = self.politician_df['Screen_Name'].apply(
             lambda x: self.statistical_count(x))
 
@@ -171,14 +175,24 @@ class TweetsAnalysis():
 
         self.politician_df.drop(columns=['Statistical_Count'], inplace=True)
 
-        """word cloud"""
+        # ===word cloud===
         self.politician_df['Word_Cloud'] = self.politician_df['Screen_Name'].apply(
             lambda x: self.word_frequency(x, 'Screen_Name'))
         return self.politician_df
 
     def state_sentiment_party(self, politician_df, party, col_name):
+        """
+        Sentiment analysis from different state.
+        :param politician_df: dataframe
+            A dataframe storing the politician info and statistical data.
+        :param party: str
+            The political party information.
+        :param col_name: str
+            The column name of the dataframe.
+
+        :return:
+        """
         state_sentiment = []
-        # state_list = list(set(politician_df['State'].tolist()))
         state_list = ['New South Wales', 'Victoria', 'Queensland', 'South Australia', 'Western Australia',
                       'Northern Territory', 'Australian Capital Territory', 'Other Territories', 'Tasmania']
         for i, v in politician_df[politician_df['Party'] == party][col_name].iteritems():

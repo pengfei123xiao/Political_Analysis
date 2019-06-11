@@ -5,12 +5,14 @@
 # @FileName: restful_replies.py
 # @Software: PyCharm
 
-from tweepy import OAuthHandler, AppAuthHandler, TweepError, API
-import pandas as pd
+"""This file defines all functionality for analysing and reformatting content from tweets."""
+
 import sys
+import pandas as pd
+from tweepy import TweepError, API
+
 sys.path.append('..')
 from analyser import functional_tools
-from multiprocessing import Process
 import threading
 import gc
 
@@ -23,43 +25,10 @@ ACCESS_TOKEN = "1104525213847318529-S0OLx8OztXjSxeGCGITcGhVa2EMz5b"
 ACCESS_TOKEN_SECRET = "wEAjXPqWPygScOzAc8RRwiHzeg1G0mGVt20qZLoJGQuDe"
 
 
-# # Twitter API Keys-yiru
-# CONSUMER_KEY = '9uWwELoYRA4loNboCqe4P7XZD'
-# CONSUMER_SECRET = 'ZhIOn2XPAnVtDjbh4iVrANG4gq7zTCJdJZAAlDpPmKAFpNz4gF'
-# ACCESS_TOKEN = '2344719422-4a94VSU2kjHzgFp1Kap9uoAAvE5R2n9vb4H5Atz'
-# ACCESS_TOKEN_SECRET = 'O5H5r7QyOTct7yFFlePITJGcuIJPBmgyDBunIYRVjYELq'
-
-
-# # # # TWITTER AUTHENTICATER # # # #
-class TwitterAuthenticator():
-    """
-
-    """
-
-    def authenticate_twitter_app(self):
-        """
-
-        :return:
-        """
-        # auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-        # auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-        auth = AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-        return auth
-
-
-# class RestfulCrawler(Process):
 class RestfulReplies(threading.Thread):
-    """
-
-    """
-
     def __init__(self, screen_name, db_name, collection_name):
-        """
-        :param twitter_user:
-        """
-        # super().__init__()
         threading.Thread.__init__(self)
-        self.auth = TwitterAuthenticator().authenticate_twitter_app()
+        self.auth = functional_tools.FunctionalTools().authenticate_twitter_app(CONSUMER_KEY, CONSUMER_SECRET)
         self.twitter_api = API(self.auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True, timeout=200)
         self.SCREEN_NAME = screen_name  # 'ScottMorrisonMP'
         self.db_name = db_name
@@ -99,15 +68,14 @@ class RestfulReplies(threading.Thread):
                 break
 
 
+""" Testing """
 if __name__ == "__main__":
-    temp_df = pd.read_csv('../data/new_politician_list.csv', usecols=['ScreenName'])
+    temp_df = pd.read_csv('../data/full_politician_list.csv', usecols=['ScreenName'])
     politician_list = temp_df['ScreenName'].dropna().tolist()
-    for screen_name in politician_list[:1]:
+    for screen_name in politician_list:
         print('============================================')
         print('Process: {}/{}'.format(politician_list.index(screen_name) + 1, len(politician_list)))
-        # restful_replies = RestfulReplies(screen_name, 'capstone', 'restfulMentioned')
-        restful_replies = RestfulReplies(screen_name, 'test', 'test99')
+        restful_replies = RestfulReplies(screen_name, 'test', 'test2')
         print("Crawling replies to {}.".format(screen_name))
         restful_replies.start()
         restful_replies.join()
-        # df.to_json('Replies_Info.json', orient='records')

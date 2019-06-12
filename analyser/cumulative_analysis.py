@@ -46,9 +46,10 @@ class CumulativeAnalysis(threading.Thread):
         self.end_date = end_date
         self.f_tools = f_tools
         self.politician_df = politician_df
+        self.source_db_name = source_db_name
+        self.target_db_name = target_db_name
 
     def run(self):
-
         pol_tweets_from_mongo = self.f_tools.find_mongo_by_date("backup", 'restfulTweets',
                                                                 datetime(2019, 4, 13, 14, 0, 0),
                                                                 self.end_date)
@@ -68,6 +69,7 @@ class CumulativeAnalysis(threading.Thread):
             del mentionState_from_mongo
             gc.collect()
 
+            # log the memory usage of the big dataframes
             new_mention_df.info(memory_usage='deep')
             logger.info(
                 "Memory usage of new_mention_df before drop columns: {}, shape: {}".format(mem_usage(new_mention_df),

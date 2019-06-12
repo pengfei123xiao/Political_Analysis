@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 12/05/2019 10:12 PM
 # @Author  : Pengfei Xiao, Zhihui Cheng
-# @FileName: attach_coordinates.py
+# @FileName: attach_state.py
 # @Software: PyCharm
 import sys
 

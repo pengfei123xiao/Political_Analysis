@@ -125,7 +125,7 @@ class TwitterStreamer():
 if __name__ == '__main__':
     # Authenticate using config.py and connect to Twitter Streaming API.
     logger.info("Start crawling.")
-
+    # Use processor 7/8
     harvester_id = int(sys.argv[1])
     conf = config[harvester_id]
     auth = functional_tools.FunctionalTools().authenticate_twitter_app(conf['consumer_key'], conf['consumer_secret'])
@@ -139,9 +139,9 @@ if __name__ == '__main__':
     temp_df = temp_df.apply(lambda x: '@' + x)
     politician_screen_name_list = temp_df.tolist()
     print(politician_screen_name_list)
-    db_address = 'mongodb://admin:123@115.146.85.107/'
-    database = 'capstone'
-    collection = 'streamingMentionedCorrectDate'
+    db_address = conf['mongodb_address']
+    database = conf['mongodb_db_name']
+    collection = conf['mongodb_collection_name']
     # Start harvester
     twitter_streamer.stream_tweets(db_address, database, collection, politician_screen_name_list)
 

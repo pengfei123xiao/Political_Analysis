@@ -12,23 +12,18 @@ import pandas as pd
 from tweepy import AppAuthHandler, API, TweepError
 
 sys.path.append('..')
+from config import config
 from analyser import functional_tools
 import threading
 import gc
 
 gc.enable()
-
-# Twitter API Keys-PF
-ACCESS_TOKEN = "967540920290754560-IWECpltxXhsZGUCQLPAGH1xIXds2TEz"
-ACCESS_TOKEN_SECRET = "l96uRBEq4s2syHCCvmtGBooe1XqsMZT7Jo2R0D1u9WeqO"
-CONSUMER_KEY = "YZXvTb6qbwRuPflCS6gUDuxnL"
-CONSUMER_SECRET = "uZi7W0uUEfCGi4vwlkruX0JSe8JZV47UH5AFHptU0JYdPpJTZQ"
-
+conf = config[2]
 
 class RestfulByMentioned(threading.Thread):
     def __init__(self, screen_name, db_name, collection_name):
         threading.Thread.__init__(self)
-        self.auth = functional_tools.FunctionalTools().authenticate_twitter_app(CONSUMER_KEY, CONSUMER_SECRET)
+        self.auth = functional_tools.FunctionalTools().authenticate_twitter_app(conf['consumer_key'], conf['consumer_secret'])
         self.twitter_api = API(self.auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True, timeout=200)
         self.SCREEN_NAME = screen_name
         self.db_name = db_name

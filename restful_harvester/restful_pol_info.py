@@ -12,24 +12,19 @@ import pandas as pd
 import sys
 
 sys.path.append('..')
+from config import config
 from analyser import functional_tools
 import threading
 import datetime
 import gc
 
 gc.enable()
-
-# Twitter API Keys-yiru
-CONSUMER_KEY = '9uWwELoYRA4loNboCqe4P7XZD'
-CONSUMER_SECRET = 'ZhIOn2XPAnVtDjbh4iVrANG4gq7zTCJdJZAAlDpPmKAFpNz4gF'
-ACCESS_TOKEN = '2344719422-4a94VSU2kjHzgFp1Kap9uoAAvE5R2n9vb4H5Atz'
-ACCESS_TOKEN_SECRET = 'O5H5r7QyOTct7yFFlePITJGcuIJPBmgyDBunIYRVjYELq'
-
+conf = config[3]
 
 class RestfulUserInfo(threading.Thread):
     def __init__(self, screen_name, db_name, collection_name, state_name, electorate_name, party_name):
         threading.Thread.__init__(self)
-        self.auth = functional_tools.FunctionalTools().authenticate_twitter_app(CONSUMER_KEY, CONSUMER_SECRET)
+        self.auth = functional_tools.FunctionalTools().authenticate_twitter_app(conf['consumer_key'], conf['consumer_secret'])
         self.twitter_api = API(self.auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True, timeout=200)
         self.SCREEN_NAME = screen_name
         self.db_name = db_name

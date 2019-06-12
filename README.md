@@ -7,6 +7,7 @@ This is our capstone project harvester and analyser repository.
 ├── restful_harvester      different restful harvesters
 ├── streaming_harvester    different streaming harvesters
 ├── README.md
+├── config.py              configs including keys for Twiiter API Authentication and database   
 └── requirements.txt       python dependencies
 ```
 

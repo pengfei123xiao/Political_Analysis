@@ -26,7 +26,8 @@ Pre-Requisite:
 ## Steps to run
 1. run streaming harvester: python3 streaming_by_mentioned.py 8
 2. run restful harvester: python3 harvester_manager.py
-3. launch automatic analyser: python3 crob_jobs.py
+3. launch automatic analyser: python3 analysis_crob_jobs.py
+4. launch mongodb backup job: python3 mongodb_backup_crob_jobs.py
 
 Notice: This repository offers data to the web application in:
 https://github.com/sche0025/PoliticalCorrectness
